@@ -302,7 +302,7 @@
       margin-bottom: 0.5rem;
     }
     
-    .input, .select {
+    .input, .select, textarea {
       width: 100%;
       padding: 0.75rem;
       border: 1px solid var(--border);
@@ -315,7 +315,12 @@
       transition: all 0.2s;
     }
     
-    .input:focus, .select:focus {
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .input:focus, .select:focus, textarea:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(196, 114, 39, 0.1);
     }
@@ -854,12 +859,10 @@
           
           <div class="progress-item">
             <div class="progress-header">
-              <span class="progress-label">Savings</span>
-              <span class="progress-value">$<span id="savings-spent">0</span> / $<span id="savings-budget">0</span></span>
+              <span class="progress-label">General Savings</span>
+              <span class="progress-value">$<span id="savings-actual">0</span></span>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill progress-primary" id="savings-bar" style="width: 0%"></div>
-            </div>
+            <div class="card-subtitle">Leftover from budget (tracked in Savings tab)</div>
           </div>
         </div>
       </div>
@@ -888,7 +891,7 @@
             <div class="stat-value">$<span id="budget-salary">0</span></div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Total Budget</div>
+            <div class="stat-label">After Bills</div>
             <div class="stat-value">$<span id="budget-total">0</span></div>
           </div>
         </div>
@@ -906,12 +909,6 @@
               <span class="progress-value">$<span id="budget-wants-amount">0</span></span>
             </div>
           </div>
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">Savings (<span id="budget-savings-pct">20</span>%)</span>
-              <span class="progress-value">$<span id="budget-savings-amount">0</span></span>
-            </div>
-          </div>
         </div>
       </div>
       
@@ -922,6 +919,18 @@
         </div>
         
         <div id="transactions-list"></div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Data Management</div>
+        </div>
+        
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="exportData()">📥 Export Data</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">📤 Import Data</button>
+          <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
+        </div>
       </div>
     </div>
 
@@ -945,6 +954,94 @@
         <div id="habits-list"></div>
       </div>
     </div>
+
+    <!-- Savings Page -->
+    <div id="page-savings" class="page-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Savings Summary</div>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">This Month</div>
+            <div class="stat-value">$<span id="savings-this-month">0</span></div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Total Saved</div>
+            <div class="stat-value">$<span id="savings-total">0</span></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Auto Calculator</div>
+        </div>
+        
+        <div class="progress-section">
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">Income</span>
+              <span class="progress-value">$<span id="calc-income">0</span></span>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">- Spent</span>
+              <span class="progress-value">$<span id="calc-spent">0</span></span>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">- Bills</span>
+              <span class="progress-value">$<span id="calc-bills">0</span></span>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">- Transfers</span>
+              <span class="progress-value">$<span id="calc-transfers">0</span></span>
+            </div>
+          </div>
+          <div class="progress-item" style="border-top: 2px solid var(--border); padding-top: 0.5rem;">
+            <div class="progress-header">
+              <span class="progress-label" style="font-size: 1rem; color: var(--primary);">= Available to Save</span>
+              <span class="progress-value" style="font-size: 1.125rem; color: var(--primary);">$<span id="calc-available">0</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Transfer History</div>
+          <button class="btn btn-primary btn-small" id="btn-add-savings-transfer">+ Add Transfer</button>
+        </div>
+        
+        <div id="savings-transfers-list"></div>
+      </div>
+    </div>
+
+    <!-- Projects Page -->
+    <div id="page-projects" class="page-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Active Projects</div>
+          <button class="btn btn-primary btn-small" id="btn-add-project">+ Add Project</button>
+        </div>
+        
+        <div id="active-projects-list"></div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Completed Projects</div>
+        </div>
+        
+        <div id="completed-projects-list"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Bottom Navigation -->
@@ -960,6 +1057,14 @@
     <button class="nav-item" data-page="habits">
       <div class="nav-icon">✓</div>
       <div class="nav-label">Habits</div>
+    </button>
+    <button class="nav-item" data-page="savings">
+      <div class="nav-icon">💵</div>
+      <div class="nav-label">Savings</div>
+    </button>
+    <button class="nav-item" data-page="projects">
+      <div class="nav-icon">💡</div>
+      <div class="nav-label">Projects</div>
     </button>
   </nav>
 
@@ -987,8 +1092,7 @@
       </div>
       
       <div class="form-group">
-        <label class="label">Savings %</label>
-        <input type="number" class="input" id="input-savings-pct" placeholder="20" min="0" max="100">
+        <div class="card-subtitle">Note: Savings are now tracked separately in the Savings tab based on actual transfers you make.</div>
       </div>
       
       <div class="modal-footer">
@@ -1032,11 +1136,6 @@
             <option value="Hobbies">Hobbies</option>
             <option value="Subscriptions">Subscriptions</option>
           </optgroup>
-          <optgroup label="Savings">
-            <option value="Emergency Fund">Emergency Fund</option>
-            <option value="Retirement">Retirement</option>
-            <option value="Investments">Investments</option>
-          </optgroup>
         </select>
       </div>
       
@@ -1058,6 +1157,93 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('modal-add-transaction')">Cancel</button>
         <button class="btn btn-primary" onclick="saveTransaction()">Add Transaction</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Savings Transfer Modal -->
+  <div class="modal-overlay" id="modal-add-savings-transfer">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Savings Transfer</div>
+        <button class="modal-close" onclick="closeModal('modal-add-savings-transfer')">×</button>
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Destination</label>
+        <select class="select" id="input-savings-destination">
+          <option value="Fidelity">Fidelity</option>
+          <option value="Savings Account">Savings Account</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Amount ($)</label>
+        <input type="number" class="input" id="input-savings-amount" placeholder="0.00" step="0.01">
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Date</label>
+        <input type="date" class="input" id="input-savings-date">
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Note (optional)</label>
+        <input type="text" class="input" id="input-savings-note" placeholder="Optional">
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-add-savings-transfer')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSavingsTransfer()">Add Transfer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Project Modal -->
+  <div class="modal-overlay" id="modal-add-project">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Project</div>
+        <button class="modal-close" onclick="closeModal('modal-add-project')">×</button>
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Title</label>
+        <input type="text" class="input" id="input-project-title" placeholder="Project name">
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Category</label>
+        <select class="select" id="input-project-category">
+          <option value="DIY Project">DIY Project</option>
+          <option value="Software Project">Software Project</option>
+          <option value="Learning">Learning</option>
+          <option value="Hobby">Hobby</option>
+          <option value="Business Idea">Business Idea</option>
+          <option value="Home Improvement">Home Improvement</option>
+          <option value="Creative">Creative</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Description</label>
+        <textarea class="input" id="input-project-description" placeholder="What's this project about?"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Priority</label>
+        <select class="select" id="input-project-priority">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-add-project')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveProject()">Add Project</button>
       </div>
     </div>
   </div>
@@ -1148,7 +1334,6 @@
     </div>
   </div>
 
-  <script>
     // State Management
     const state = {
       currentPage: 'dashboard',
@@ -1157,13 +1342,14 @@
       budgetSettings: {
         monthlySalary: 0,
         needsPct: 50,
-        wantsPct: 30,
-        savingsPct: 20
+        wantsPct: 30
       },
       transactions: [],
       habits: [],
       habitChecklistSelections: new Set(),
-      recurringBills: []
+      recurringBills: [],
+      savingsTransfers: [],
+      projects: []
     };
     
     // Common habits organized by category and time of day
@@ -1181,8 +1367,7 @@
       'Afternoon/Work': [
         'Deep work session',
         'Take breaks',
-        'Healthy lunch',
-        'Walk outside'
+        'Healthy lunch'
       ],
       'Evening Routine': [
         'Plan tomorrow',
@@ -1195,7 +1380,6 @@
         'Walk 10,000 steps',
         'Track spending',
         'Call family',
-        'Random act of kindness',
         'No impulse purchases',
         'Pack lunch',
         'Less than 2 hours social media',
@@ -1212,9 +1396,12 @@
       renderDashboard();
       renderBudgetPage();
       renderHabitsPage();
+      renderSavingsPage();
+      renderProjectsPage();
       
-      // Set today's date for transaction input
+      // Set today's date for inputs
       document.getElementById('input-transaction-date').valueAsDate = new Date();
+      document.getElementById('input-savings-date').valueAsDate = new Date();
     }
 
     // Data Management
@@ -1238,6 +1425,16 @@
       if (savedBills) {
         state.recurringBills = JSON.parse(savedBills);
       }
+      
+      const savedSavingsTransfers = localStorage.getItem('savingsTransfers');
+      if (savedSavingsTransfers) {
+        state.savingsTransfers = JSON.parse(savedSavingsTransfers);
+      }
+      
+      const savedProjects = localStorage.getItem('projects');
+      if (savedProjects) {
+        state.projects = JSON.parse(savedProjects);
+      }
     }
 
     function saveData() {
@@ -1245,6 +1442,60 @@
       localStorage.setItem('transactions', JSON.stringify(state.transactions));
       localStorage.setItem('habits', JSON.stringify(state.habits));
       localStorage.setItem('recurringBills', JSON.stringify(state.recurringBills));
+      localStorage.setItem('savingsTransfers', JSON.stringify(state.savingsTransfers));
+      localStorage.setItem('projects', JSON.stringify(state.projects));
+    }
+
+    // Export/Import Functions
+    function exportData() {
+      const exportData = {
+        version: '2.0',
+        exportDate: new Date().toISOString(),
+        budgetSettings: state.budgetSettings,
+        transactions: state.transactions,
+        habits: state.habits,
+        recurringBills: state.recurringBills,
+        savingsTransfers: state.savingsTransfers,
+        projects: state.projects
+      };
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `life-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          if (confirm('This will replace all your current data. Are you sure?')) {
+            if (importedData.budgetSettings) state.budgetSettings = importedData.budgetSettings;
+            if (importedData.transactions) state.transactions = importedData.transactions;
+            if (importedData.habits) state.habits = importedData.habits;
+            if (importedData.recurringBills) state.recurringBills = importedData.recurringBills;
+            if (importedData.savingsTransfers) state.savingsTransfers = importedData.savingsTransfers;
+            if (importedData.projects) state.projects = importedData.projects;
+            saveData();
+            renderDashboard();
+            renderBudgetPage();
+            renderHabitsPage();
+            renderSavingsPage();
+            renderProjectsPage();
+            alert('Data imported successfully!');
+          }
+        } catch (error) {
+          alert('Error importing data. Please make sure the file is a valid Life Tracker backup.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
     }
 
     // Date Utilities
@@ -1291,6 +1542,8 @@
       if (pageName === 'dashboard') renderDashboard();
       if (pageName === 'budget') renderBudgetPage();
       if (pageName === 'habits') renderHabitsPage();
+      if (pageName === 'savings') renderSavingsPage();
+      if (pageName === 'projects') renderProjectsPage();
     }
 
     // Modal Management
@@ -1299,6 +1552,8 @@
       document.getElementById('btn-add-transaction').addEventListener('click', () => openModal('modal-add-transaction'));
       document.getElementById('btn-add-habit').addEventListener('click', () => openModal('modal-add-habit'));
       document.getElementById('btn-add-bill').addEventListener('click', () => openModal('modal-add-bill'));
+      document.getElementById('btn-add-savings-transfer').addEventListener('click', () => openModal('modal-add-savings-transfer'));
+      document.getElementById('btn-add-project').addEventListener('click', () => openModal('modal-add-project'));
       
       document.getElementById('btn-prev-day').addEventListener('click', () => changeHabitDate(-1));
       document.getElementById('btn-today').addEventListener('click', () => {
@@ -1326,7 +1581,6 @@
         document.getElementById('input-salary').value = state.budgetSettings.monthlySalary;
         document.getElementById('input-needs-pct').value = state.budgetSettings.needsPct;
         document.getElementById('input-wants-pct').value = state.budgetSettings.wantsPct;
-        document.getElementById('input-savings-pct').value = state.budgetSettings.savingsPct;
       }
       
       // Render habit checklist if opening add habit modal
@@ -1345,7 +1599,6 @@
       state.budgetSettings.monthlySalary = parseFloat(document.getElementById('input-salary').value) || 0;
       state.budgetSettings.needsPct = parseFloat(document.getElementById('input-needs-pct').value) || 50;
       state.budgetSettings.wantsPct = parseFloat(document.getElementById('input-wants-pct').value) || 30;
-      state.budgetSettings.savingsPct = parseFloat(document.getElementById('input-savings-pct').value) || 20;
       
       saveData();
       closeModal('modal-budget-settings');
@@ -1373,6 +1626,7 @@
       
       renderBudgetPage();
       renderDashboard();
+      renderSavingsPage();
     }
 
     function deleteTransaction(id) {
@@ -1381,17 +1635,16 @@
         saveData();
         renderBudgetPage();
         renderDashboard();
+        renderSavingsPage();
       }
     }
 
     function getCategoryType(category) {
       const needs = ['Housing', 'Utilities', 'Groceries', 'Transportation', 'Insurance', 'Healthcare'];
       const wants = ['Dining Out', 'Entertainment', 'Shopping', 'Hobbies', 'Subscriptions'];
-      const savings = ['Emergency Fund', 'Retirement', 'Investments'];
       
       if (needs.includes(category)) return 'needs';
       if (wants.includes(category)) return 'wants';
-      if (savings.includes(category)) return 'savings';
       return 'wants';
     }
 
@@ -1426,6 +1679,7 @@
       
       renderBudgetPage();
       renderDashboard();
+      renderSavingsPage();
     }
     
     function deleteRecurringBill(id) {
@@ -1434,6 +1688,7 @@
         saveData();
         renderBudgetPage();
         renderDashboard();
+        renderSavingsPage();
       }
     }
     
@@ -1468,17 +1723,112 @@
       });
     }
 
+    // Savings Functions
+    function saveSavingsTransfer() {
+      const transfer = {
+        id: Date.now(),
+        destination: document.getElementById('input-savings-destination').value,
+        amount: parseFloat(document.getElementById('input-savings-amount').value) || 0,
+        date: document.getElementById('input-savings-date').value,
+        note: document.getElementById('input-savings-note').value
+      };
+      
+      if (transfer.amount <= 0) {
+        alert('Please enter a valid amount');
+        return;
+      }
+      
+      state.savingsTransfers.unshift(transfer);
+      saveData();
+      closeModal('modal-add-savings-transfer');
+      
+      // Clear form
+      document.getElementById('input-savings-amount').value = '';
+      document.getElementById('input-savings-note').value = '';
+      
+      renderSavingsPage();
+      renderDashboard();
+    }
+
+    function deleteSavingsTransfer(id) {
+      if (confirm('Delete this savings transfer?')) {
+        state.savingsTransfers = state.savingsTransfers.filter(t => t.id !== id);
+        saveData();
+        renderSavingsPage();
+        renderDashboard();
+      }
+    }
+
+    function getCurrentMonthSavingsTransfers() {
+      const currentMonth = state.currentDate.getMonth();
+      const currentYear = state.currentDate.getFullYear();
+      
+      return state.savingsTransfers.filter(t => {
+        const date = new Date(t.date);
+        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+      });
+    }
+
+    function getTotalSavingsTransfers() {
+      return state.savingsTransfers.reduce((sum, t) => sum + t.amount, 0);
+    }
+
+    // Projects Functions
+    function saveProject() {
+      const project = {
+        id: Date.now(),
+        title: document.getElementById('input-project-title').value.trim(),
+        category: document.getElementById('input-project-category').value,
+        description: document.getElementById('input-project-description').value.trim(),
+        priority: document.getElementById('input-project-priority').value,
+        completed: false,
+        createdAt: new Date().toISOString()
+      };
+      
+      if (!project.title) {
+        alert('Please enter a project title');
+        return;
+      }
+      
+      state.projects.unshift(project);
+      saveData();
+      closeModal('modal-add-project');
+      
+      // Clear form
+      document.getElementById('input-project-title').value = '';
+      document.getElementById('input-project-description').value = '';
+      
+      renderProjectsPage();
+    }
+
+    function deleteProject(id) {
+      if (confirm('Delete this project?')) {
+        state.projects = state.projects.filter(p => p.id !== id);
+        saveData();
+        renderProjectsPage();
+      }
+    }
+
+    function toggleProjectComplete(id) {
+      const project = state.projects.find(p => p.id === id);
+      if (project) {
+        project.completed = !project.completed;
+        saveData();
+        renderProjectsPage();
+      }
+    }
+
     function calculateBudgetStats() {
       const monthlyTransactions = getCurrentMonthTransactions();
       const salary = state.budgetSettings.monthlySalary;
+      const totalBills = getTotalMonthlyBills();
+      const afterBills = salary - totalBills;
       
-      const needsBudget = salary * (state.budgetSettings.needsPct / 100);
-      const wantsBudget = salary * (state.budgetSettings.wantsPct / 100);
-      const savingsBudget = salary * (state.budgetSettings.savingsPct / 100);
+      const needsBudget = afterBills * (state.budgetSettings.needsPct / 100);
+      const wantsBudget = afterBills * (state.budgetSettings.wantsPct / 100);
       
       let needsSpent = 0;
       let wantsSpent = 0;
-      let savingsSpent = 0;
       let totalIncome = 0;
       
       monthlyTransactions.forEach(t => {
@@ -1488,12 +1838,12 @@
           const catType = getCategoryType(t.category);
           if (catType === 'needs') needsSpent += t.amount;
           else if (catType === 'wants') wantsSpent += t.amount;
-          else if (catType === 'savings') savingsSpent += t.amount;
         }
       });
       
-      const totalSpent = needsSpent + wantsSpent + savingsSpent;
-      const remaining = salary + totalIncome - totalSpent;
+      const totalSpent = needsSpent + wantsSpent;
+      const monthlyTransfers = getCurrentMonthSavingsTransfers().reduce((sum, t) => sum + t.amount, 0);
+      const remaining = salary + totalIncome - totalSpent - totalBills - monthlyTransfers;
       
       return {
         salary,
@@ -1502,10 +1852,11 @@
         remaining,
         needsBudget,
         wantsBudget,
-        savingsBudget,
         needsSpent,
         wantsSpent,
-        savingsSpent
+        afterBills,
+        totalBills,
+        monthlyTransfers
       };
     }
 
@@ -1806,16 +2157,13 @@
       document.getElementById('needs-budget').textContent = budgetStats.needsBudget.toFixed(0);
       document.getElementById('wants-spent').textContent = budgetStats.wantsSpent.toFixed(0);
       document.getElementById('wants-budget').textContent = budgetStats.wantsBudget.toFixed(0);
-      document.getElementById('savings-spent').textContent = budgetStats.savingsSpent.toFixed(0);
-      document.getElementById('savings-budget').textContent = budgetStats.savingsBudget.toFixed(0);
+      document.getElementById('savings-actual').textContent = budgetStats.remaining.toFixed(0);
       
       const needsPct = budgetStats.needsBudget > 0 ? (budgetStats.needsSpent / budgetStats.needsBudget * 100) : 0;
       const wantsPct = budgetStats.wantsBudget > 0 ? (budgetStats.wantsSpent / budgetStats.wantsBudget * 100) : 0;
-      const savingsPct = budgetStats.savingsBudget > 0 ? (budgetStats.savingsSpent / budgetStats.savingsBudget * 100) : 0;
       
       document.getElementById('needs-bar').style.width = Math.min(needsPct, 100) + '%';
       document.getElementById('wants-bar').style.width = Math.min(wantsPct, 100) + '%';
-      document.getElementById('savings-bar').style.width = Math.min(savingsPct, 100) + '%';
       
       // Draw graphs
       setTimeout(() => {
@@ -1829,16 +2177,13 @@
       
       // Update budget display
       document.getElementById('budget-salary').textContent = budgetStats.salary.toFixed(0);
-      document.getElementById('budget-total').textContent = budgetStats.salary.toFixed(0);
+      document.getElementById('budget-total').textContent = budgetStats.afterBills.toFixed(0);
       
       document.getElementById('budget-needs-pct').textContent = state.budgetSettings.needsPct;
       document.getElementById('budget-needs-amount').textContent = budgetStats.needsBudget.toFixed(0);
       
       document.getElementById('budget-wants-pct').textContent = state.budgetSettings.wantsPct;
       document.getElementById('budget-wants-amount').textContent = budgetStats.wantsBudget.toFixed(0);
-      
-      document.getElementById('budget-savings-pct').textContent = state.budgetSettings.savingsPct;
-      document.getElementById('budget-savings-amount').textContent = budgetStats.savingsBudget.toFixed(0);
       
       // Render recurring bills
       const billsListEl = document.getElementById('recurring-bills-list');
@@ -1895,8 +2240,7 @@
       
       listEl.innerHTML = state.transactions.map(t => {
         const catType = getCategoryType(t.category);
-        const badgeClass = catType === 'needs' ? 'badge-needs' : 
-                          catType === 'wants' ? 'badge-wants' : 'badge-savings';
+        const badgeClass = catType === 'needs' ? 'badge-needs' : 'badge-wants';
         
         return `
           <div class="list-item">
@@ -2011,6 +2355,121 @@
       });
       
       listEl.innerHTML = html;
+    }
+
+    function renderSavingsPage() {
+      const thisMonthTransfers = getCurrentMonthSavingsTransfers();
+      const thisMonthTotal = thisMonthTransfers.reduce((sum, t) => sum + t.amount, 0);
+      const totalSaved = getTotalSavingsTransfers();
+      
+      document.getElementById('savings-this-month').textContent = thisMonthTotal.toFixed(0);
+      document.getElementById('savings-total').textContent = totalSaved.toFixed(0);
+      
+      // Auto calculator
+      const budgetStats = calculateBudgetStats();
+      document.getElementById('calc-income').textContent = budgetStats.salary.toFixed(0);
+      document.getElementById('calc-spent').textContent = budgetStats.totalSpent.toFixed(0);
+      document.getElementById('calc-bills').textContent = budgetStats.totalBills.toFixed(0);
+      document.getElementById('calc-transfers').textContent = budgetStats.monthlyTransfers.toFixed(0);
+      document.getElementById('calc-available').textContent = budgetStats.remaining.toFixed(0);
+      
+      // Render transfer history
+      const listEl = document.getElementById('savings-transfers-list');
+      
+      if (state.savingsTransfers.length === 0) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">💰</div>
+            <div class="empty-state-text">No savings transfers yet</div>
+          </div>
+        `;
+        return;
+      }
+      
+      listEl.innerHTML = state.savingsTransfers.map(t => {
+        return `
+          <div class="list-item">
+            <div class="list-item-content">
+              <div class="list-item-title">${t.destination}</div>
+              ${t.note ? `<div class="list-item-subtitle">${t.note}</div>` : ''}
+              <div class="list-item-subtitle">${t.date}</div>
+            </div>
+            <div class="list-item-action">
+              <span class="list-item-value amount-positive">$${t.amount.toFixed(2)}</span>
+              <button class="modal-close" onclick="deleteSavingsTransfer(${t.id})" style="background: var(--error);">×</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderProjectsPage() {
+      const activeProjects = state.projects.filter(p => !p.completed);
+      const completedProjects = state.projects.filter(p => p.completed);
+      
+      // Render active projects
+      const activeListEl = document.getElementById('active-projects-list');
+      
+      if (activeProjects.length === 0) {
+        activeListEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">💡</div>
+            <div class="empty-state-text">No active projects yet</div>
+          </div>
+        `;
+      } else {
+        activeListEl.innerHTML = activeProjects.map(p => {
+          const priorityColors = {
+            'High': 'var(--error)',
+            'Medium': 'var(--warning)',
+            'Low': 'var(--success)'
+          };
+          
+          return `
+            <div class="list-item">
+              <div class="list-item-content">
+                <div class="list-item-title">${p.title}</div>
+                <div class="list-item-subtitle">
+                  ${p.category} • 
+                  <span style="color: ${priorityColors[p.priority]}; font-weight: 600;">${p.priority} Priority</span>
+                </div>
+                ${p.description ? `<div class="list-item-subtitle" style="margin-top: 0.25rem;">${p.description}</div>` : ''}
+              </div>
+              <div class="list-item-action">
+                <button class="btn btn-small btn-secondary" onclick="toggleProjectComplete(${p.id})">✓</button>
+                <button class="modal-close" onclick="deleteProject(${p.id})" style="background: var(--error);">×</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      // Render completed projects
+      const completedListEl = document.getElementById('completed-projects-list');
+      
+      if (completedProjects.length === 0) {
+        completedListEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">✨</div>
+            <div class="empty-state-text">No completed projects yet</div>
+          </div>
+        `;
+      } else {
+        completedListEl.innerHTML = completedProjects.map(p => {
+          return `
+            <div class="list-item" style="opacity: 0.7;">
+              <div class="list-item-content">
+                <div class="list-item-title" style="text-decoration: line-through;">${p.title}</div>
+                <div class="list-item-subtitle">${p.category}</div>
+              </div>
+              <div class="list-item-action">
+                <button class="btn btn-small btn-secondary" onclick="toggleProjectComplete(${p.id})">↶</button>
+                <button class="modal-close" onclick="deleteProject(${p.id})" style="background: var(--error);">×</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     }
 
     // Graph Drawing Functions

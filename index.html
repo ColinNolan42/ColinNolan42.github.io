@@ -1,2698 +1,315 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Life Tracker">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Life Tracker — budget, habits, savings, and projects in one place." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; connect-src 'none';" />
+  <meta name="theme-color" content="#2563eb" />
   <title>Life Tracker</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    :root {
-      --bg-primary: #F5F5F3;
-      --bg-card: #FFFFFF;
-      --bg-elevated: #FEFDFB;
-      --primary: #C47227;
-      --primary-dark: #A85D1F;
-      --primary-light: #E09248;
-      --text-primary: #1F1F1F;
-      --text-secondary: #5F5F5F;
-      --text-tertiary: #8F8F8F;
-      --border: #E5E5E0;
-      --border-light: #F0F0EB;
-      --success: #2D7A5C;
-      --warning: #C47227;
-      --error: #B04632;
-      --accent-blue: #4A7BA7;
-    }
-    
-    body {
-      font-family: 'Work Sans', -apple-system, sans-serif;
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      overflow-x: hidden;
-      padding-bottom: 80px;
-    }
-    
-    .app-container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    
-    /* Header */
-    .header {
-      background: var(--bg-card);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .logo {
-      font-family: 'Merriweather', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-      letter-spacing: -0.5px;
-    }
-    
-    .date-badge {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      background: var(--bg-primary);
-      padding: 0.375rem 0.75rem;
-      border-radius: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    /* Page Content */
-    .page-content {
-      padding: 1rem;
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-    
-    .page-content.active {
-      display: block;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Cards */
-    .card {
-      background: var(--bg-card);
-      border-radius: 1rem;
-      border: 1px solid var(--border);
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    
-    .card-title {
-      font-family: 'Merriweather', serif;
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-    
-    .card-subtitle {
-      font-size: 0.75rem;
-      color: var(--text-tertiary);
-      margin-top: 0.25rem;
-    }
-    
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-    
-    .stat-box {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-light);
-      border-radius: 0.75rem;
-      padding: 1rem;
-    }
-    
-    .stat-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    .stat-value {
-      font-family: 'Merriweather', serif;
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      line-height: 1;
-    }
-    
-    .stat-trend {
-      font-size: 0.75rem;
-      color: var(--text-tertiary);
-      margin-top: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    
-    .trend-up {
-      color: var(--success);
-    }
-    
-    .trend-down {
-      color: var(--error);
-    }
-    
-    /* Progress Bars */
-    .progress-section {
-      margin-top: 1rem;
-    }
-    
-    .progress-item {
-      margin-bottom: 1rem;
-    }
-    
-    .progress-item:last-child {
-      margin-bottom: 0;
-    }
-    
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-    
-    .progress-label {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    
-    .progress-value {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-    
-    .progress-bar {
-      width: 100%;
-      height: 0.5rem;
-      background: var(--border-light);
-      border-radius: 1rem;
-      overflow: hidden;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      border-radius: 1rem;
-      transition: width 0.5s ease;
-    }
-    
-    .progress-success { background: var(--success); }
-    .progress-warning { background: var(--warning); }
-    .progress-error { background: var(--error); }
-    .progress-primary { background: var(--primary); }
-    
-    /* Graph Container */
-    .graph-container {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-light);
-      border-radius: 0.75rem;
-      padding: 1rem;
-      margin-top: 1rem;
-      min-height: 250px;
-      position: relative;
-    }
-    
-    .graph-canvas {
-      width: 100%;
-      height: 220px;
-    }
-    
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.25rem;
-      border-radius: 0.75rem;
-      border: none;
-      font-weight: 600;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      touch-action: manipulation;
-    }
-    
-    .btn:active {
-      transform: scale(0.97);
-    }
-    
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-    
-    .btn-primary:hover {
-      background: var(--primary-dark);
-    }
-    
-    .btn-secondary {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-      border: 1px solid var(--border);
-    }
-    
-    .btn-small {
-      padding: 0.5rem 1rem;
-      font-size: 0.75rem;
-    }
-    
-    /* Form Elements */
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    
-    .label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.5rem;
-    }
-    
-    .input, .select, textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      font-family: 'Work Sans', sans-serif;
-      background: var(--bg-card);
-      color: var(--text-primary);
-      outline: none;
-      transition: all 0.2s;
-    }
-    
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    
-    .input:focus, .select:focus, textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(196, 114, 39, 0.1);
-    }
-    
-    /* List Items */
-    .list-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-light);
-      border-radius: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .list-item-content {
-      flex: 1;
-    }
-    
-    .list-item-title {
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.25rem;
-    }
-    
-    .list-item-subtitle {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-    
-    .list-item-action {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .list-item-value {
-      font-weight: 700;
-      font-family: 'Merriweather', serif;
-    }
-    
-    .amount-positive {
-      color: var(--success);
-    }
-    
-    .amount-negative {
-      color: var(--error);
-    }
-    
-    /* Habit Tracker Specific */
-    .habit-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.875rem;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-light);
-      border-radius: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .habit-checkbox {
-      width: 44px;
-      height: 44px;
-      min-width: 44px;
-      border: 2px solid var(--border);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--bg-card);
-      font-size: 1.25rem;
-    }
-    
-    .habit-checkbox.checked {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-    }
-    
-    .habit-checkbox:active {
-      transform: scale(0.92);
-    }
-    
-    .habit-info {
-      flex: 1;
-    }
-    
-    .habit-name {
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.25rem;
-    }
-    
-    .habit-category {
-      font-size: 0.75rem;
-      color: var(--text-tertiary);
-    }
-    
-    .habit-streak {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    
-    /* Bottom Navigation */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--bg-card);
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-around;
-      padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-      z-index: 1000;
-    }
-    
-    .nav-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.5rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-      background: none;
-      color: var(--text-tertiary);
-    }
-    
-    .nav-item.active {
-      color: var(--primary);
-    }
-    
-    .nav-icon {
-      font-size: 1.5rem;
-      transition: transform 0.2s;
-    }
-    
-    .nav-item.active .nav-icon {
-      transform: scale(1.1);
-    }
-    
-    .nav-label {
-      font-size: 0.625rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    /* Empty States */
-    .empty-state {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--text-tertiary);
-    }
-    
-    .empty-state-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
-    }
-    
-    .empty-state-text {
-      font-size: 0.875rem;
-    }
-    
-    /* Modal Overlay */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: none;
-      align-items: flex-end;
-      z-index: 2000;
-      animation: fadeInOverlay 0.2s ease;
-    }
-    
-    .modal-overlay.active {
-      display: flex;
-    }
-    
-    @keyframes fadeInOverlay {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    .modal {
-      background: var(--bg-card);
-      border-radius: 1rem 1rem 0 0;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 1.5rem;
-      animation: slideUp 0.3s ease;
-    }
-    
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    
-    .modal-title {
-      font-family: 'Merriweather', serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-    
-    .modal-close {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: none;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-size: 1.25rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .modal-footer {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-    }
-    
-    .modal-footer .btn {
-      flex: 1;
-    }
-    
-    /* Date Selector */
-    .date-selector {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-light);
-      border-radius: 0.75rem;
-      padding: 0.75rem 1rem;
-      margin-bottom: 1rem;
-    }
-    
-    .date-display {
-      font-weight: 600;
-      font-size: 1rem;
-      color: var(--text-primary);
-    }
-    
-    .date-controls {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    .date-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 0.5rem;
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text-primary);
-      font-size: 1.125rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    
-    .date-btn:active {
-      transform: scale(0.92);
-      background: var(--bg-primary);
-    }
-    
-    /* Category badges */
-    .category-badge {
-      display: inline-block;
-      padding: 0.25rem 0.5rem;
-      border-radius: 0.375rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    .badge-needs {
-      background: rgba(45, 122, 92, 0.1);
-      color: var(--success);
-    }
-    
-    .badge-wants {
-      background: rgba(196, 114, 39, 0.1);
-      color: var(--primary);
-    }
-    
-    .badge-savings {
-      background: rgba(74, 123, 167, 0.1);
-      color: var(--accent-blue);
-    }
-    
-    /* Habit Checklist Styles */
-    .habit-checklist-section {
-      margin-bottom: 1.5rem;
-    }
-    
-    .habit-checklist-category {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 0.75rem;
-      margin-top: 1rem;
-    }
-    
-    .habit-checklist-category:first-child {
-      margin-top: 0;
-    }
-    
-    .habit-checklist-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-light);
-      border-radius: 0.5rem;
-      margin-bottom: 0.5rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .habit-checklist-item:hover {
-      background: var(--bg-primary);
-    }
-    
-    .habit-checklist-item.selected {
-      background: rgba(196, 114, 39, 0.1);
-      border-color: var(--primary);
-    }
-    
-    .habit-checklist-checkbox {
-      width: 24px;
-      height: 24px;
-      min-width: 24px;
-      border: 2px solid var(--border);
-      border-radius: 0.375rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      background: var(--bg-card);
-      font-size: 0.875rem;
-    }
-    
-    .habit-checklist-item.selected .habit-checklist-checkbox {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-    }
-    
-    .habit-checklist-label {
-      flex: 1;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    
-    .habit-checklist-item.selected .habit-checklist-label {
-      color: var(--primary);
-      font-weight: 600;
-    }
-    
-    /* Utility Classes */
-    .mt-1 { margin-top: 0.5rem; }
-    .mt-2 { margin-top: 1rem; }
-    .mb-1 { margin-bottom: 0.5rem; }
-    .mb-2 { margin-bottom: 1rem; }
-    .text-center { text-align: center; }
-    .flex { display: flex; }
-    .flex-between { display: flex; justify-content: space-between; align-items: center; }
-    .gap-1 { gap: 0.5rem; }
-  </style>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
 </head>
 <body>
-  <div class="app-container">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-content">
-        <div class="logo">Life Tracker</div>
-        <div class="date-badge" id="currentDate"></div>
-      </div>
-    </div>
 
-    <!-- Dashboard Page -->
-    <div id="page-dashboard" class="page-content active">
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Weekly Summary</div>
-            <div class="card-subtitle" id="weekly-summary-dates"></div>
-          </div>
-        </div>
-        
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="stat-label">Spent This Week</div>
-            <div class="stat-value">$<span id="week-spent">0</span></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Habits Complete</div>
-            <div class="stat-value"><span id="week-habits">0</span>%</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Avg Daily Spend</div>
-            <div class="stat-value">$<span id="week-avg-spend">0</span></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Best Day</div>
-            <div class="stat-value" style="font-size: 1rem;" id="week-best-day">-</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Monthly Overview</div>
-            <div class="card-subtitle">Your progress this month</div>
-          </div>
-        </div>
-        
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="stat-label">Spent</div>
-            <div class="stat-value">$<span id="dashboard-spent">0</span></div>
-            <div class="stat-trend" id="dashboard-spent-trend"></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Remaining</div>
-            <div class="stat-value">$<span id="dashboard-remaining">0</span></div>
-            <div class="stat-trend" id="dashboard-remaining-trend"></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Habits Done</div>
-            <div class="stat-value"><span id="dashboard-habits-completed">0</span></div>
-            <div class="stat-trend" id="dashboard-habits-trend"></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Streak</div>
-            <div class="stat-value"><span id="dashboard-streak">0</span>🔥</div>
-            <div class="stat-trend">days in a row</div>
-          </div>
-        </div>
-        
-        <div class="progress-section">
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">Budget Usage</span>
-              <span class="progress-value" id="dashboard-budget-pct">0%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill progress-primary" id="dashboard-budget-bar" style="width: 0%"></div>
-            </div>
-          </div>
-          
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">Habit Completion</span>
-              <span class="progress-value" id="dashboard-habit-pct">0%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill progress-success" id="dashboard-habit-bar" style="width: 0%"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-title">Spending Trends</div>
-        <div class="graph-container">
-          <canvas id="spending-graph" class="graph-canvas"></canvas>
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-title">Habit Performance</div>
-        <div class="graph-container">
-          <canvas id="habit-graph" class="graph-canvas"></canvas>
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-title">Budget Breakdown</div>
-        <div class="progress-section">
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">Needs</span>
-              <span class="progress-value">$<span id="needs-spent">0</span> / $<span id="needs-budget">0</span></span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill progress-success" id="needs-bar" style="width: 0%"></div>
-            </div>
-          </div>
-          
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">Wants</span>
-              <span class="progress-value">$<span id="wants-spent">0</span> / $<span id="wants-budget">0</span></span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill progress-warning" id="wants-bar" style="width: 0%"></div>
-            </div>
-          </div>
-          
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">General Savings</span>
-              <span class="progress-value">$<span id="savings-actual">0</span></span>
-            </div>
-            <div class="card-subtitle">Leftover from budget (tracked in Savings tab)</div>
-          </div>
-        </div>
-      </div>
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <span class="app-header__title">Life Tracker</span>
+    <div class="app-header__actions">
+      <button id="btn-install-pwa" class="btn btn--icon" hidden aria-label="Install app">⬇</button>
+      <button id="theme-toggle" class="btn btn--icon" aria-label="Toggle dark mode">☾</button>
     </div>
+  </header>
 
-    <!-- Budget Page -->
-    <div id="page-budget" class="page-content">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Recurring Bills</div>
-          <button class="btn btn-primary btn-small" id="btn-add-bill">+ Add Bill</button>
+  <!-- ── Main content ───────────────────────────────────────────────────── -->
+  <main class="app-main">
+
+    <!-- Dashboard page -->
+    <section id="page-dashboard" class="page" aria-label="Dashboard"></section>
+
+    <!-- Budget page -->
+    <section id="page-budget" class="page" aria-label="Budget" hidden>
+      <div id="budget-alerts" role="alert" aria-live="polite"></div>
+
+      <!-- Budget summary card -->
+      <div class="card budget-summary">
+        <div class="budget-summary__row">
+          <button id="btn-open-budget-settings" class="btn btn--secondary btn--sm">Edit Budget</button>
+          <div class="budget-summary__actions">
+            <button id="btn-export-data" class="btn btn--secondary btn--sm">Export</button>
+            <button id="btn-import-data" class="btn btn--secondary btn--sm">Import</button>
+            <input id="input-import-file" type="file" accept="application/json" hidden aria-label="Import data file" />
+          </div>
         </div>
-        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card__label">Monthly Income</div>
+            <div class="stat-card__value">$<span id="budget-salary">0</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">After Bills</div>
+            <div class="stat-card__value">$<span id="budget-total">0</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">Needs (<span id="budget-needs-pct">50</span>%)</div>
+            <div class="stat-card__value">$<span id="budget-needs-amount">0</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">Wants (<span id="budget-wants-pct">30</span>%)</div>
+            <div class="stat-card__value">$<span id="budget-wants-amount">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recurring bills -->
+      <div class="card">
+        <div class="card__header">
+          <h2 class="card__title">Recurring Bills</h2>
+          <button id="btn-open-add-bill" class="btn btn--primary btn--sm">+ Add</button>
+        </div>
         <div id="recurring-bills-list"></div>
       </div>
-      
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Budget Settings</div>
-          <button class="btn btn-small btn-secondary" id="btn-edit-budget">Edit</button>
+
+      <!-- Transaction filters -->
+      <div class="filter-bar card">
+        <div class="filter-row">
+          <input id="filter-search" type="search" placeholder="Search..." aria-label="Search transactions" />
+          <select id="filter-type" aria-label="Filter by type">
+            <option value="">All types</option>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
         </div>
-        
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="stat-label">Monthly Salary</div>
-            <div class="stat-value">$<span id="budget-salary">0</span></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">After Bills</div>
-            <div class="stat-value">$<span id="budget-total">0</span></div>
-          </div>
-        </div>
-        
-        <div class="progress-section mt-2">
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">Needs (<span id="budget-needs-pct">50</span>%)</span>
-              <span class="progress-value">$<span id="budget-needs-amount">0</span></span>
-            </div>
-          </div>
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">Wants (<span id="budget-wants-pct">30</span>%)</span>
-              <span class="progress-value">$<span id="budget-wants-amount">0</span></span>
-            </div>
-          </div>
+        <div class="filter-row">
+          <input id="filter-category" type="text" placeholder="Category..." aria-label="Filter by category" />
+          <input id="filter-date-from" type="date" aria-label="From date" />
+          <input id="filter-date-to"   type="date" aria-label="To date" />
+          <button id="filter-clear" class="btn btn--secondary btn--sm">Clear</button>
         </div>
       </div>
-      
+
+      <!-- Transactions -->
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">Transactions</div>
-          <button class="btn btn-primary btn-small" id="btn-add-transaction">+ Add</button>
+        <div class="card__header">
+          <h2 class="card__title">Transactions</h2>
+          <button id="btn-open-add-transaction" class="btn btn--primary btn--sm">+ Add</button>
         </div>
-        
         <div id="transactions-list"></div>
       </div>
-      
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Data Management</div>
-        </div>
-        
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-          <button class="btn btn-secondary" onclick="exportData()">📥 Export Data</button>
-          <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">📤 Import Data</button>
-          <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
-        </div>
-      </div>
-    </div>
+    </section>
 
-    <!-- Habits Page -->
-    <div id="page-habits" class="page-content">
-      <div class="date-selector">
-        <div class="date-display" id="habit-date"></div>
-        <div class="date-controls">
-          <button class="date-btn" id="btn-prev-day">←</button>
-          <button class="date-btn" id="btn-today">Today</button>
-          <button class="date-btn" id="btn-next-day">→</button>
-        </div>
-      </div>
-      
+    <!-- Habits page -->
+    <section id="page-habits" class="page" aria-label="Habits" hidden>
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">My Habits</div>
-          <button class="btn btn-primary btn-small" id="btn-add-habit">+ Add</button>
+        <div class="card__header">
+          <button id="habit-date-prev" class="btn btn--icon" aria-label="Previous day">&#8249;</button>
+          <span id="habit-date" class="habit-date-label"></span>
+          <button id="habit-date-next" class="btn btn--icon" aria-label="Next day">&#8250;</button>
+          <button id="btn-open-add-habit" class="btn btn--primary btn--sm">+ Add</button>
         </div>
-        
         <div id="habits-list"></div>
       </div>
-    </div>
+    </section>
 
-    <!-- Savings Page -->
-    <div id="page-savings" class="page-content">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Savings Summary</div>
-        </div>
-        
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="stat-label">This Month</div>
-            <div class="stat-value">$<span id="savings-this-month">0</span></div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Total Saved</div>
-            <div class="stat-value">$<span id="savings-total">0</span></div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Auto Calculator</div>
-        </div>
-        
-        <div class="progress-section">
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">Income</span>
-              <span class="progress-value">$<span id="calc-income">0</span></span>
-            </div>
-          </div>
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">- Spent</span>
-              <span class="progress-value">$<span id="calc-spent">0</span></span>
-            </div>
-          </div>
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">- Bills</span>
-              <span class="progress-value">$<span id="calc-bills">0</span></span>
-            </div>
-          </div>
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="progress-label">- Transfers</span>
-              <span class="progress-value">$<span id="calc-transfers">0</span></span>
-            </div>
-          </div>
-          <div class="progress-item" style="border-top: 2px solid var(--border); padding-top: 0.5rem;">
-            <div class="progress-header">
-              <span class="progress-label" style="font-size: 1rem; color: var(--primary);">= Available to Save</span>
-              <span class="progress-value" style="font-size: 1.125rem; color: var(--primary);">$<span id="calc-available">0</span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Transfer History</div>
-          <button class="btn btn-primary btn-small" id="btn-add-savings-transfer">+ Add Transfer</button>
-        </div>
-        
-        <div id="savings-transfers-list"></div>
-      </div>
-    </div>
+    <!-- Savings page — rendered by Savings.renderSavingsPage() -->
+    <section id="page-savings" class="page" aria-label="Savings" hidden></section>
 
-    <!-- Projects Page -->
-    <div id="page-projects" class="page-content">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Active Projects</div>
-          <button class="btn btn-primary btn-small" id="btn-add-project">+ Add Project</button>
-        </div>
-        
-        <div id="active-projects-list"></div>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Completed Projects</div>
-        </div>
-        
-        <div id="completed-projects-list"></div>
-      </div>
-    </div>
-  </div>
+    <!-- Projects page — rendered by Projects.renderProjectsPage() -->
+    <section id="page-projects" class="page" aria-label="Projects" hidden></section>
 
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" data-page="dashboard">
-      <div class="nav-icon">📊</div>
-      <div class="nav-label">Dashboard</div>
+  </main>
+
+  <!-- ── Bottom nav ─────────────────────────────────────────────────────── -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-btn" data-page="dashboard" aria-label="Dashboard" aria-current="page">
+      <span class="nav-btn__icon" aria-hidden="true">&#9638;</span>
+      <span class="nav-btn__label">Dashboard</span>
     </button>
-    <button class="nav-item" data-page="budget">
-      <div class="nav-icon">💰</div>
-      <div class="nav-label">Budget</div>
+    <button class="nav-btn" data-page="budget" aria-label="Budget">
+      <span class="nav-btn__icon" aria-hidden="true">$</span>
+      <span class="nav-btn__label">Budget</span>
     </button>
-    <button class="nav-item" data-page="habits">
-      <div class="nav-icon">✓</div>
-      <div class="nav-label">Habits</div>
+    <button class="nav-btn" data-page="habits" aria-label="Habits">
+      <span class="nav-btn__icon" aria-hidden="true">&#10003;</span>
+      <span class="nav-btn__label">Habits</span>
     </button>
-    <button class="nav-item" data-page="savings">
-      <div class="nav-icon">💵</div>
-      <div class="nav-label">Savings</div>
+    <button class="nav-btn" data-page="savings" aria-label="Savings">
+      <span class="nav-btn__icon" aria-hidden="true">&#8593;</span>
+      <span class="nav-btn__label">Savings</span>
     </button>
-    <button class="nav-item" data-page="projects">
-      <div class="nav-icon">💡</div>
-      <div class="nav-label">Projects</div>
+    <button class="nav-btn" data-page="projects" aria-label="Projects">
+      <span class="nav-btn__icon" aria-hidden="true">&#9670;</span>
+      <span class="nav-btn__label">Projects</span>
     </button>
   </nav>
 
-  <!-- Budget Settings Modal -->
-  <div class="modal-overlay" id="modal-budget-settings">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">Budget Settings</div>
-        <button class="modal-close" onclick="closeModal('modal-budget-settings')">×</button>
+  <!-- ── Modals ─────────────────────────────────────────────────────────── -->
+
+  <!-- Budget settings modal -->
+  <div id="modal-budget-settings" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="lbl-budget-settings">
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 id="lbl-budget-settings" class="modal__title">Budget Settings</h2>
+        <button class="btn btn--icon" data-close-modal="modal-budget-settings" aria-label="Close">&times;</button>
       </div>
-      
       <div class="form-group">
-        <label class="label">Monthly Salary ($)</label>
-        <input type="number" class="input" id="input-salary" placeholder="5000">
+        <label for="input-salary">Monthly Income ($)</label>
+        <input id="input-salary" type="number" min="0" step="1" placeholder="e.g. 4000" />
       </div>
-      
       <div class="form-group">
-        <label class="label">Needs %</label>
-        <input type="number" class="input" id="input-needs-pct" placeholder="50" min="0" max="100">
+        <label for="input-needs-pct">Needs % (e.g. 50)</label>
+        <input id="input-needs-pct" type="number" min="0" max="100" step="1" placeholder="50" />
       </div>
-      
       <div class="form-group">
-        <label class="label">Wants %</label>
-        <input type="number" class="input" id="input-wants-pct" placeholder="30" min="0" max="100">
+        <label for="input-wants-pct">Wants % (e.g. 30)</label>
+        <input id="input-wants-pct" type="number" min="0" max="100" step="1" placeholder="30" />
       </div>
-      
-      <div class="form-group">
-        <div class="card-subtitle">Note: Savings are now tracked separately in the Savings tab based on actual transfers you make.</div>
-      </div>
-      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-budget-settings')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveBudgetSettings()">Save</button>
+      <div class="modal__footer">
+        <button id="btn-save-budget-settings" class="btn btn--primary btn--full">Save</button>
       </div>
     </div>
   </div>
 
-  <!-- Add Transaction Modal -->
-  <div class="modal-overlay" id="modal-add-transaction">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">Add Transaction</div>
-        <button class="modal-close" onclick="closeModal('modal-add-transaction')">×</button>
+  <!-- Add transaction modal -->
+  <div id="modal-add-transaction" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="lbl-add-transaction">
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 id="lbl-add-transaction" class="modal__title">Add Transaction</h2>
+        <button class="btn btn--icon" data-close-modal="modal-add-transaction" aria-label="Close">&times;</button>
       </div>
-      
       <div class="form-group">
-        <label class="label">Type</label>
-        <select class="select" id="input-transaction-type">
+        <label for="input-transaction-type">Type</label>
+        <select id="input-transaction-type">
           <option value="expense">Expense</option>
           <option value="income">Income</option>
         </select>
       </div>
-      
       <div class="form-group">
-        <label class="label">Category</label>
-        <select class="select" id="input-transaction-category">
+        <label for="input-transaction-category">Category</label>
+        <select id="input-transaction-category">
           <optgroup label="Needs">
-            <option value="Housing">Housing</option>
-            <option value="Utilities">Utilities</option>
-            <option value="Groceries">Groceries</option>
-            <option value="Transportation">Transportation</option>
-            <option value="Insurance">Insurance</option>
-            <option value="Healthcare">Healthcare</option>
+            <option>Rent/Mortgage</option>
+            <option>Utilities</option>
+            <option>Groceries</option>
+            <option>Transportation</option>
+            <option>Healthcare</option>
+            <option>Insurance</option>
+            <option>Phone</option>
+            <option>Internet</option>
           </optgroup>
           <optgroup label="Wants">
-            <option value="Dining Out">Dining Out</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Shopping">Shopping</option>
-            <option value="Hobbies">Hobbies</option>
-            <option value="Subscriptions">Subscriptions</option>
+            <option>Dining Out</option>
+            <option>Entertainment</option>
+            <option>Shopping</option>
+            <option>Subscriptions</option>
+            <option>Travel</option>
+            <option>Hobbies</option>
+            <option>Personal Care</option>
           </optgroup>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Amount ($)</label>
-        <input type="number" class="input" id="input-transaction-amount" placeholder="0.00" step="0.01">
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Description</label>
-        <input type="text" class="input" id="input-transaction-description" placeholder="Optional">
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Date</label>
-        <input type="date" class="input" id="input-transaction-date">
-      </div>
-      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-add-transaction')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveTransaction()">Add Transaction</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Savings Transfer Modal -->
-  <div class="modal-overlay" id="modal-add-savings-transfer">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">Add Savings Transfer</div>
-        <button class="modal-close" onclick="closeModal('modal-add-savings-transfer')">×</button>
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Destination</label>
-        <select class="select" id="input-savings-destination">
-          <option value="Fidelity">Fidelity</option>
-          <option value="Savings Account">Savings Account</option>
+          <optgroup label="Income">
+            <option>Salary</option>
+            <option>Freelance</option>
+            <option>Side Income</option>
+            <option>Investment</option>
+            <option>Refund</option>
+            <option>Gift</option>
+          </optgroup>
           <option value="Other">Other</option>
         </select>
       </div>
-      
       <div class="form-group">
-        <label class="label">Amount ($)</label>
-        <input type="number" class="input" id="input-savings-amount" placeholder="0.00" step="0.01">
+        <label for="input-transaction-amount">Amount ($)</label>
+        <input id="input-transaction-amount" type="number" min="0.01" step="0.01" placeholder="0.00" />
       </div>
-      
       <div class="form-group">
-        <label class="label">Date</label>
-        <input type="date" class="input" id="input-savings-date">
+        <label for="input-transaction-description">Description (optional)</label>
+        <input id="input-transaction-description" type="text" maxlength="200" placeholder="Optional note" />
       </div>
-      
       <div class="form-group">
-        <label class="label">Note (optional)</label>
-        <input type="text" class="input" id="input-savings-note" placeholder="Optional">
+        <label for="input-transaction-date">Date</label>
+        <input id="input-transaction-date" type="date" />
       </div>
-      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-add-savings-transfer')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveSavingsTransfer()">Add Transfer</button>
+      <div class="modal__footer">
+        <button id="btn-save-transaction" class="btn btn--primary btn--full">Add Transaction</button>
       </div>
     </div>
   </div>
 
-  <!-- Add Project Modal -->
-  <div class="modal-overlay" id="modal-add-project">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">Add Project</div>
-        <button class="modal-close" onclick="closeModal('modal-add-project')">×</button>
+  <!-- Add recurring bill modal -->
+  <div id="modal-add-bill" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="lbl-add-bill">
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 id="lbl-add-bill" class="modal__title">Add Recurring Bill</h2>
+        <button class="btn btn--icon" data-close-modal="modal-add-bill" aria-label="Close">&times;</button>
       </div>
-      
       <div class="form-group">
-        <label class="label">Title</label>
-        <input type="text" class="input" id="input-project-title" placeholder="Project name">
+        <label for="input-bill-name">Bill Name</label>
+        <input id="input-bill-name" type="text" maxlength="100" placeholder="e.g. Netflix" />
       </div>
-      
       <div class="form-group">
-        <label class="label">Category</label>
-        <select class="select" id="input-project-category">
-          <option value="DIY Project">DIY Project</option>
-          <option value="Software Project">Software Project</option>
-          <option value="Learning">Learning</option>
-          <option value="Hobby">Hobby</option>
-          <option value="Business Idea">Business Idea</option>
-          <option value="Home Improvement">Home Improvement</option>
-          <option value="Creative">Creative</option>
-          <option value="Other">Other</option>
+        <label for="input-bill-amount">Amount ($)</label>
+        <input id="input-bill-amount" type="number" min="0.01" step="0.01" placeholder="0.00" />
+      </div>
+      <div class="form-group">
+        <label for="input-bill-due-day">Due Day of Month (1–31)</label>
+        <input id="input-bill-due-day" type="number" min="1" max="31" step="1" placeholder="1" />
+      </div>
+      <div class="form-group">
+        <label for="input-bill-category">Category</label>
+        <select id="input-bill-category">
+          <option>Rent/Mortgage</option>
+          <option>Utilities</option>
+          <option>Insurance</option>
+          <option>Phone</option>
+          <option>Internet</option>
+          <option>Subscriptions</option>
+          <option>Transportation</option>
+          <option>Healthcare</option>
+          <option>Other</option>
         </select>
       </div>
-      
-      <div class="form-group">
-        <label class="label">Description</label>
-        <textarea class="input" id="input-project-description" placeholder="What's this project about?"></textarea>
+      <div class="modal__footer">
+        <button id="btn-save-bill" class="btn btn--primary btn--full">Add Bill</button>
       </div>
-      
-      <div class="form-group">
-        <label class="label">Priority</label>
-        <select class="select" id="input-project-priority">
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
+    </div>
+  </div>
+
+  <!-- Add habit modal -->
+  <div id="modal-add-habit" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="lbl-add-habit">
+    <div class="modal__content modal__content--tall">
+      <div class="modal__header">
+        <h2 id="lbl-add-habit" class="modal__title">Add Habits</h2>
+        <button class="btn btn--icon" data-close-modal="modal-add-habit" aria-label="Close">&times;</button>
+      </div>
+      <div class="form-group form-group--inline">
+        <input id="input-custom-habit-name" type="text" maxlength="100" placeholder="Custom habit name..." />
+        <select id="input-custom-habit-category">
+          <option value="Morning Routine">Morning</option>
+          <option value="Afternoon/Work">Afternoon</option>
+          <option value="Evening Routine">Evening</option>
+          <option value="Anytime/Daily" selected>Anytime</option>
         </select>
+        <button id="habit-custom-add" class="btn btn--secondary btn--sm">Add</button>
       </div>
-      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-add-project')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveProject()">Add Project</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Habit Modal -->
-  <div class="modal-overlay" id="modal-add-habit">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">Add Habits</div>
-        <button class="modal-close" onclick="closeModal('modal-add-habit')">×</button>
-      </div>
-      
-      <div style="margin-bottom: 1.5rem;">
-        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">
-          Select habits you want to track:
-        </div>
-        
-        <div id="habit-checklist"></div>
-      </div>
-      
-      <div style="border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 1rem;">
-        <div class="form-group">
-          <label class="label">Or add a custom habit:</label>
-          <input type="text" class="input" id="input-custom-habit-name" placeholder="Enter habit name">
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Time of Day</label>
-          <select class="select" id="input-custom-habit-category">
-            <option value="Morning Routine">Morning Routine</option>
-            <option value="Afternoon/Work">Afternoon/Work</option>
-            <option value="Evening Routine">Evening Routine</option>
-            <option value="Anytime/Daily">Anytime/Daily</option>
-          </select>
-        </div>
-        
-        <button class="btn btn-secondary" onclick="addCustomHabitToChecklist()" style="width: 100%; margin-bottom: 1rem;">
-          Add Custom Habit to List
-        </button>
-      </div>
-      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-add-habit')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveSelectedHabits()">Add Selected Habits</button>
+      <div id="habit-checklist" class="habit-checklist-scroll"></div>
+      <div class="modal__footer modal__footer--row">
+        <button id="btn-cancel-habit-modal" class="btn btn--secondary">Cancel</button>
+        <button id="btn-save-habits" class="btn btn--primary">Save Selected</button>
       </div>
     </div>
   </div>
 
-  <!-- Add Recurring Bill Modal -->
-  <div class="modal-overlay" id="modal-add-bill">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="modal-title">Add Recurring Bill</div>
-        <button class="modal-close" onclick="closeModal('modal-add-bill')">×</button>
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Bill Name</label>
-        <input type="text" class="input" id="input-bill-name" placeholder="e.g., Rent, Netflix, Phone">
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Amount ($)</label>
-        <input type="number" class="input" id="input-bill-amount" placeholder="0.00" step="0.01">
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Due Day of Month</label>
-        <input type="number" class="input" id="input-bill-due-day" placeholder="1-31" min="1" max="31">
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Category</label>
-        <select class="select" id="input-bill-category">
-          <option value="Housing">Housing (Rent/Mortgage)</option>
-          <option value="Utilities">Utilities</option>
-          <option value="Transportation">Transportation</option>
-          <option value="Insurance">Insurance</option>
-          <option value="Subscriptions">Subscriptions</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-add-bill')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveRecurringBill()">Add Bill</button>
-      </div>
-    </div>
-  </div>
+  <!-- ── Scripts (load order: utils → store → features → charts → app) ──── -->
+  <script src="js/utils.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/budget.js"></script>
+  <script src="js/habits.js"></script>
+  <script src="js/savings.js"></script>
+  <script src="js/projects.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
 
-  <script>
-    // State Management
-    const state = {
-      currentPage: 'dashboard',
-      currentDate: new Date(),
-      habitDate: new Date(),
-      budgetSettings: {
-        monthlySalary: 0,
-        needsPct: 50,
-        wantsPct: 30
-      },
-      transactions: [],
-      habits: [],
-      habitChecklistSelections: new Set(),
-      recurringBills: [],
-      savingsTransfers: [],
-      projects: []
-    };
-    
-    // Common habits organized by category and time of day
-    const commonHabits = {
-      'Morning Routine': [
-        'Wake up early',
-        'Make bed',
-        'Drink 8 glasses water',
-        'Meditate',
-        'Journal',
-        'Eat breakfast',
-        'Take vitamins',
-        'Stretch'
-      ],
-      'Afternoon/Work': [
-        'Deep work session',
-        'Take breaks',
-        'Healthy lunch'
-      ],
-      'Evening Routine': [
-        'Plan tomorrow',
-        'Cook dinner',
-        'Exercise',
-        'Floss teeth',
-        'Get 8 hours sleep'
-      ],
-      'Anytime/Daily': [
-        'Walk 10,000 steps',
-        'Track spending',
-        'Call family',
-        'No impulse purchases',
-        'Pack lunch',
-        'Less than 2 hours social media',
-        'Less than 2 hours video games'
-      ]
-    };
-
-    // Initialize
-    function init() {
-      loadData();
-      updateCurrentDate();
-      setupNavigation();
-      setupModalListeners();
-      renderDashboard();
-      renderBudgetPage();
-      renderHabitsPage();
-      renderSavingsPage();
-      renderProjectsPage();
-      
-      // Set today's date for inputs
-      document.getElementById('input-transaction-date').valueAsDate = new Date();
-      document.getElementById('input-savings-date').valueAsDate = new Date();
-    }
-
-    // Data Management
-    function loadData() {
-      const savedBudget = localStorage.getItem('budgetSettings');
-      if (savedBudget) {
-        state.budgetSettings = JSON.parse(savedBudget);
-      }
-      
-      const savedTransactions = localStorage.getItem('transactions');
-      if (savedTransactions) {
-        state.transactions = JSON.parse(savedTransactions);
-      }
-      
-      const savedHabits = localStorage.getItem('habits');
-      if (savedHabits) {
-        state.habits = JSON.parse(savedHabits);
-      }
-      
-      const savedBills = localStorage.getItem('recurringBills');
-      if (savedBills) {
-        state.recurringBills = JSON.parse(savedBills);
-      }
-      
-      const savedSavingsTransfers = localStorage.getItem('savingsTransfers');
-      if (savedSavingsTransfers) {
-        state.savingsTransfers = JSON.parse(savedSavingsTransfers);
-      }
-      
-      const savedProjects = localStorage.getItem('projects');
-      if (savedProjects) {
-        state.projects = JSON.parse(savedProjects);
-      }
-    }
-
-    function saveData() {
-      localStorage.setItem('budgetSettings', JSON.stringify(state.budgetSettings));
-      localStorage.setItem('transactions', JSON.stringify(state.transactions));
-      localStorage.setItem('habits', JSON.stringify(state.habits));
-      localStorage.setItem('recurringBills', JSON.stringify(state.recurringBills));
-      localStorage.setItem('savingsTransfers', JSON.stringify(state.savingsTransfers));
-      localStorage.setItem('projects', JSON.stringify(state.projects));
-    }
-
-    // Export/Import Functions
-    function exportData() {
-      const exportData = {
-        version: '2.0',
-        exportDate: new Date().toISOString(),
-        budgetSettings: state.budgetSettings,
-        transactions: state.transactions,
-        habits: state.habits,
-        recurringBills: state.recurringBills,
-        savingsTransfers: state.savingsTransfers,
-        projects: state.projects
-      };
-      const dataStr = JSON.stringify(exportData, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `life-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const importedData = JSON.parse(e.target.result);
-          if (confirm('This will replace all your current data. Are you sure?')) {
-            if (importedData.budgetSettings) state.budgetSettings = importedData.budgetSettings;
-            if (importedData.transactions) state.transactions = importedData.transactions;
-            if (importedData.habits) state.habits = importedData.habits;
-            if (importedData.recurringBills) state.recurringBills = importedData.recurringBills;
-            if (importedData.savingsTransfers) state.savingsTransfers = importedData.savingsTransfers;
-            if (importedData.projects) state.projects = importedData.projects;
-            saveData();
-            renderDashboard();
-            renderBudgetPage();
-            renderHabitsPage();
-            renderSavingsPage();
-            renderProjectsPage();
-            alert('Data imported successfully!');
-          }
-        } catch (error) {
-          alert('Error importing data. Please make sure the file is a valid Life Tracker backup.');
-        }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
-    }
-
-    // Date Utilities
-    function updateCurrentDate() {
-      const options = { month: 'short', year: 'numeric' };
-      document.getElementById('currentDate').textContent = 
-        state.currentDate.toLocaleDateString('en-US', options);
-    }
-
-    function formatDate(date) {
-      const options = { weekday: 'short', month: 'short', day: 'numeric' };
-      return date.toLocaleDateString('en-US', options);
-    }
-
-    function getDateKey(date) {
-      return date.toISOString().split('T')[0];
-    }
-
-    // Navigation
-    function setupNavigation() {
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const page = item.dataset.page;
-          switchPage(page);
-        });
-      });
-    }
-
-    function switchPage(pageName) {
-      // Update nav
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.page === pageName);
-      });
-      
-      // Update pages
-      document.querySelectorAll('.page-content').forEach(page => {
-        page.classList.remove('active');
-      });
-      document.getElementById(`page-${pageName}`).classList.add('active');
-      
-      state.currentPage = pageName;
-      
-      // Render page content
-      if (pageName === 'dashboard') renderDashboard();
-      if (pageName === 'budget') renderBudgetPage();
-      if (pageName === 'habits') renderHabitsPage();
-      if (pageName === 'savings') renderSavingsPage();
-      if (pageName === 'projects') renderProjectsPage();
-    }
-
-    // Modal Management
-    function setupModalListeners() {
-      document.getElementById('btn-edit-budget').addEventListener('click', () => openModal('modal-budget-settings'));
-      document.getElementById('btn-add-transaction').addEventListener('click', () => openModal('modal-add-transaction'));
-      document.getElementById('btn-add-habit').addEventListener('click', () => openModal('modal-add-habit'));
-      document.getElementById('btn-add-bill').addEventListener('click', () => openModal('modal-add-bill'));
-      document.getElementById('btn-add-savings-transfer').addEventListener('click', () => openModal('modal-add-savings-transfer'));
-      document.getElementById('btn-add-project').addEventListener('click', () => openModal('modal-add-project'));
-      
-      document.getElementById('btn-prev-day').addEventListener('click', () => changeHabitDate(-1));
-      document.getElementById('btn-today').addEventListener('click', () => {
-        state.habitDate = new Date();
-        renderHabitsPage();
-      });
-      document.getElementById('btn-next-day').addEventListener('click', () => changeHabitDate(1));
-      
-      // Close modals on overlay click
-      document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        overlay.addEventListener('click', (e) => {
-          if (e.target === overlay) {
-            overlay.classList.remove('active');
-          }
-        });
-      });
-    }
-
-    function openModal(modalId) {
-      const modal = document.getElementById(modalId);
-      modal.classList.add('active');
-      
-      // Pre-fill budget settings if opening that modal
-      if (modalId === 'modal-budget-settings') {
-        document.getElementById('input-salary').value = state.budgetSettings.monthlySalary;
-        document.getElementById('input-needs-pct').value = state.budgetSettings.needsPct;
-        document.getElementById('input-wants-pct').value = state.budgetSettings.wantsPct;
-      }
-      
-      // Render habit checklist if opening add habit modal
-      if (modalId === 'modal-add-habit') {
-        state.habitChecklistSelections.clear();
-        renderHabitChecklist();
-      }
-    }
-
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-    }
-
-    // Budget Functions
-    function saveBudgetSettings() {
-      state.budgetSettings.monthlySalary = parseFloat(document.getElementById('input-salary').value) || 0;
-      state.budgetSettings.needsPct = parseFloat(document.getElementById('input-needs-pct').value) || 50;
-      state.budgetSettings.wantsPct = parseFloat(document.getElementById('input-wants-pct').value) || 30;
-      
-      saveData();
-      closeModal('modal-budget-settings');
-      renderBudgetPage();
-      renderDashboard();
-    }
-
-    function saveTransaction() {
-      const transaction = {
-        id: Date.now(),
-        type: document.getElementById('input-transaction-type').value,
-        category: document.getElementById('input-transaction-category').value,
-        amount: parseFloat(document.getElementById('input-transaction-amount').value) || 0,
-        description: document.getElementById('input-transaction-description').value,
-        date: document.getElementById('input-transaction-date').value
-      };
-      
-      state.transactions.unshift(transaction);
-      saveData();
-      closeModal('modal-add-transaction');
-      
-      // Clear form
-      document.getElementById('input-transaction-amount').value = '';
-      document.getElementById('input-transaction-description').value = '';
-      
-      renderBudgetPage();
-      renderDashboard();
-      renderSavingsPage();
-    }
-
-    function deleteTransaction(id) {
-      if (confirm('Delete this transaction?')) {
-        state.transactions = state.transactions.filter(t => t.id !== id);
-        saveData();
-        renderBudgetPage();
-        renderDashboard();
-        renderSavingsPage();
-      }
-    }
-
-    function getCategoryType(category) {
-      const needs = ['Housing', 'Utilities', 'Groceries', 'Transportation', 'Insurance', 'Healthcare'];
-      const wants = ['Dining Out', 'Entertainment', 'Shopping', 'Hobbies', 'Subscriptions'];
-      
-      if (needs.includes(category)) return 'needs';
-      if (wants.includes(category)) return 'wants';
-      return 'wants';
-    }
-
-    // Recurring Bills Functions
-    function saveRecurringBill() {
-      const bill = {
-        id: Date.now(),
-        name: document.getElementById('input-bill-name').value.trim(),
-        amount: parseFloat(document.getElementById('input-bill-amount').value) || 0,
-        dueDay: parseInt(document.getElementById('input-bill-due-day').value) || 1,
-        category: document.getElementById('input-bill-category').value
-      };
-      
-      if (!bill.name) {
-        alert('Please enter a bill name');
-        return;
-      }
-      
-      if (bill.amount <= 0) {
-        alert('Please enter a valid amount');
-        return;
-      }
-      
-      state.recurringBills.push(bill);
-      saveData();
-      closeModal('modal-add-bill');
-      
-      // Clear form
-      document.getElementById('input-bill-name').value = '';
-      document.getElementById('input-bill-amount').value = '';
-      document.getElementById('input-bill-due-day').value = '';
-      
-      renderBudgetPage();
-      renderDashboard();
-      renderSavingsPage();
-    }
-    
-    function deleteRecurringBill(id) {
-      if (confirm('Delete this recurring bill?')) {
-        state.recurringBills = state.recurringBills.filter(b => b.id !== id);
-        saveData();
-        renderBudgetPage();
-        renderDashboard();
-        renderSavingsPage();
-      }
-    }
-    
-    function getUpcomingBills() {
-      const today = new Date();
-      const currentDay = today.getDate();
-      const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-      
-      return state.recurringBills.map(bill => {
-        let daysUntil;
-        if (bill.dueDay >= currentDay) {
-          daysUntil = bill.dueDay - currentDay;
-        } else {
-          daysUntil = (daysInMonth - currentDay) + bill.dueDay;
-        }
-        
-        return { ...bill, daysUntil };
-      }).sort((a, b) => a.daysUntil - b.daysUntil);
-    }
-    
-    function getTotalMonthlyBills() {
-      return state.recurringBills.reduce((sum, bill) => sum + bill.amount, 0);
-    }
-
-    function getCurrentMonthTransactions() {
-      const currentMonth = state.currentDate.getMonth();
-      const currentYear = state.currentDate.getFullYear();
-      
-      return state.transactions.filter(t => {
-        const date = new Date(t.date);
-        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-      });
-    }
-
-    // Savings Functions
-    function saveSavingsTransfer() {
-      const transfer = {
-        id: Date.now(),
-        destination: document.getElementById('input-savings-destination').value,
-        amount: parseFloat(document.getElementById('input-savings-amount').value) || 0,
-        date: document.getElementById('input-savings-date').value,
-        note: document.getElementById('input-savings-note').value
-      };
-      
-      if (transfer.amount <= 0) {
-        alert('Please enter a valid amount');
-        return;
-      }
-      
-      state.savingsTransfers.unshift(transfer);
-      saveData();
-      closeModal('modal-add-savings-transfer');
-      
-      // Clear form
-      document.getElementById('input-savings-amount').value = '';
-      document.getElementById('input-savings-note').value = '';
-      
-      renderSavingsPage();
-      renderDashboard();
-    }
-
-    function deleteSavingsTransfer(id) {
-      if (confirm('Delete this savings transfer?')) {
-        state.savingsTransfers = state.savingsTransfers.filter(t => t.id !== id);
-        saveData();
-        renderSavingsPage();
-        renderDashboard();
-      }
-    }
-
-    function getCurrentMonthSavingsTransfers() {
-      const currentMonth = state.currentDate.getMonth();
-      const currentYear = state.currentDate.getFullYear();
-      
-      return state.savingsTransfers.filter(t => {
-        const date = new Date(t.date);
-        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-      });
-    }
-
-    function getTotalSavingsTransfers() {
-      return state.savingsTransfers.reduce((sum, t) => sum + t.amount, 0);
-    }
-
-    // Projects Functions
-    function saveProject() {
-      const project = {
-        id: Date.now(),
-        title: document.getElementById('input-project-title').value.trim(),
-        category: document.getElementById('input-project-category').value,
-        description: document.getElementById('input-project-description').value.trim(),
-        priority: document.getElementById('input-project-priority').value,
-        completed: false,
-        createdAt: new Date().toISOString()
-      };
-      
-      if (!project.title) {
-        alert('Please enter a project title');
-        return;
-      }
-      
-      state.projects.unshift(project);
-      saveData();
-      closeModal('modal-add-project');
-      
-      // Clear form
-      document.getElementById('input-project-title').value = '';
-      document.getElementById('input-project-description').value = '';
-      
-      renderProjectsPage();
-    }
-
-    function deleteProject(id) {
-      if (confirm('Delete this project?')) {
-        state.projects = state.projects.filter(p => p.id !== id);
-        saveData();
-        renderProjectsPage();
-      }
-    }
-
-    function toggleProjectComplete(id) {
-      const project = state.projects.find(p => p.id === id);
-      if (project) {
-        project.completed = !project.completed;
-        saveData();
-        renderProjectsPage();
-      }
-    }
-
-    function calculateBudgetStats() {
-      const monthlyTransactions = getCurrentMonthTransactions();
-      const salary = state.budgetSettings.monthlySalary;
-      const totalBills = getTotalMonthlyBills();
-      const afterBills = salary - totalBills;
-      
-      const needsBudget = afterBills * (state.budgetSettings.needsPct / 100);
-      const wantsBudget = afterBills * (state.budgetSettings.wantsPct / 100);
-      
-      let needsSpent = 0;
-      let wantsSpent = 0;
-      let totalIncome = 0;
-      
-      monthlyTransactions.forEach(t => {
-        if (t.type === 'income') {
-          totalIncome += t.amount;
-        } else {
-          const catType = getCategoryType(t.category);
-          if (catType === 'needs') needsSpent += t.amount;
-          else if (catType === 'wants') wantsSpent += t.amount;
-        }
-      });
-      
-      const totalSpent = needsSpent + wantsSpent;
-      const monthlyTransfers = getCurrentMonthSavingsTransfers().reduce((sum, t) => sum + t.amount, 0);
-      const remaining = salary + totalIncome - totalSpent - totalBills - monthlyTransfers;
-      
-      return {
-        salary,
-        totalIncome,
-        totalSpent,
-        remaining,
-        needsBudget,
-        wantsBudget,
-        needsSpent,
-        wantsSpent,
-        afterBills,
-        totalBills,
-        monthlyTransfers
-      };
-    }
-
-    // Habit Functions
-    function renderHabitChecklist() {
-      const container = document.getElementById('habit-checklist');
-      
-      // Get existing habit names to filter out duplicates
-      const existingHabitNames = state.habits.map(h => h.name.toLowerCase());
-      
-      let html = '';
-      
-      Object.entries(commonHabits).forEach(([category, habits]) => {
-        // Filter out habits that already exist
-        const availableHabits = habits.filter(h => !existingHabitNames.includes(h.toLowerCase()));
-        
-        if (availableHabits.length > 0) {
-          html += `<div class="habit-checklist-category">${category}</div>`;
-          
-          availableHabits.forEach(habit => {
-            const habitKey = `${category}:${habit}`;
-            const isSelected = state.habitChecklistSelections.has(habitKey);
-            
-            html += `
-              <div class="habit-checklist-item ${isSelected ? 'selected' : ''}" 
-                   onclick="toggleHabitChecklistItem('${category}', '${habit.replace(/'/g, "\\'")}')">
-                <div class="habit-checklist-checkbox">
-                  ${isSelected ? '✓' : ''}
-                </div>
-                <div class="habit-checklist-label">${habit}</div>
-              </div>
-            `;
-          });
-        }
-      });
-      
-      if (html === '') {
-        html = '<div class="empty-state-text" style="padding: 1rem;">All common habits already added! Use custom habit form below.</div>';
-      }
-      
-      container.innerHTML = html;
-    }
-    
-    function toggleHabitChecklistItem(category, habitName) {
-      const habitKey = `${category}:${habitName}`;
-      
-      if (state.habitChecklistSelections.has(habitKey)) {
-        state.habitChecklistSelections.delete(habitKey);
-      } else {
-        state.habitChecklistSelections.add(habitKey);
-      }
-      
-      renderHabitChecklist();
-    }
-    
-    function addCustomHabitToChecklist() {
-      const name = document.getElementById('input-custom-habit-name').value.trim();
-      const timeOfDay = document.getElementById('input-custom-habit-category').value;
-      
-      if (!name) {
-        alert('Please enter a habit name');
-        return;
-      }
-      
-      // Check if habit already exists
-      const existingHabitNames = state.habits.map(h => h.name.toLowerCase());
-      if (existingHabitNames.includes(name.toLowerCase())) {
-        alert('This habit already exists');
-        return;
-      }
-      
-      // Add to common habits temporarily and select it
-      if (!commonHabits[timeOfDay]) {
-        commonHabits[timeOfDay] = [];
-      }
-      commonHabits[timeOfDay].unshift(name);
-      
-      const habitKey = `${timeOfDay}:${name}`;
-      state.habitChecklistSelections.add(habitKey);
-      
-      // Clear input
-      document.getElementById('input-custom-habit-name').value = '';
-      
-      renderHabitChecklist();
-    }
-    
-    function saveSelectedHabits() {
-      if (state.habitChecklistSelections.size === 0) {
-        alert('Please select at least one habit');
-        return;
-      }
-      
-      // Create habit objects from selections
-      state.habitChecklistSelections.forEach(habitKey => {
-        const [timeOfDay, habitName] = habitKey.split(':');
-        
-        const habit = {
-          id: Date.now() + Math.random(), // Ensure unique IDs
-          name: habitName,
-          timeOfDay: timeOfDay,
-          completions: {}
-        };
-        
-        state.habits.push(habit);
-      });
-      
-      // Clear selections
-      state.habitChecklistSelections.clear();
-      
-      saveData();
-      closeModal('modal-add-habit');
-      
-      renderHabitsPage();
-      renderDashboard();
-    }
-
-    function toggleHabit(habitId, date) {
-      const habit = state.habits.find(h => h.id === habitId);
-      if (!habit) return;
-      
-      const dateKey = getDateKey(date);
-      habit.completions[dateKey] = !habit.completions[dateKey];
-      
-      saveData();
-      renderHabitsPage();
-      renderDashboard();
-    }
-
-    function deleteHabit(habitId) {
-      if (confirm('Delete this habit?')) {
-        state.habits = state.habits.filter(h => h.id !== habitId);
-        saveData();
-        renderHabitsPage();
-        renderDashboard();
-      }
-    }
-
-    function changeHabitDate(days) {
-      state.habitDate.setDate(state.habitDate.getDate() + days);
-      renderHabitsPage();
-    }
-
-    function calculateHabitStats() {
-      const currentMonth = state.currentDate.getMonth();
-      const currentYear = state.currentDate.getFullYear();
-      
-      let totalCompletions = 0;
-      let totalPossible = 0;
-      
-      // Count completions for current month
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      state.habits.forEach(habit => {
-        for (let day = 1; day <= daysInMonth; day++) {
-          const date = new Date(currentYear, currentMonth, day);
-          if (date <= new Date()) {
-            totalPossible++;
-            const dateKey = getDateKey(date);
-            if (habit.completions[dateKey]) {
-              totalCompletions++;
-            }
-          }
-        }
-      });
-      
-      // Calculate streak
-      let streak = 0;
-      let checkDate = new Date();
-      checkDate.setDate(checkDate.getDate() - 1);
-      
-      while (true) {
-        const dateKey = getDateKey(checkDate);
-        let dayComplete = false;
-        
-        if (state.habits.length > 0) {
-          const completedToday = state.habits.filter(h => h.completions[dateKey]).length;
-          dayComplete = completedToday > 0;
-        }
-        
-        if (!dayComplete) break;
-        
-        streak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-        
-        if (streak > 365) break; // Safety limit
-      }
-      
-      return {
-        totalCompletions,
-        totalPossible,
-        completionRate: totalPossible > 0 ? (totalCompletions / totalPossible * 100) : 0,
-        streak
-      };
-    }
-
-    // Weekly Summary Functions
-    function getWeeklySummary() {
-      const today = new Date();
-      const dayOfWeek = today.getDay();
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - dayOfWeek);
-      startOfWeek.setHours(0, 0, 0, 0);
-      
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-      endOfWeek.setHours(23, 59, 59, 999);
-      
-      // Get transactions for this week
-      const weekTransactions = state.transactions.filter(t => {
-        const tDate = new Date(t.date);
-        return tDate >= startOfWeek && tDate <= endOfWeek && t.type === 'expense';
-      });
-      
-      const weekSpent = weekTransactions.reduce((sum, t) => sum + t.amount, 0);
-      
-      // Calculate daily averages
-      const daysElapsed = dayOfWeek + 1;
-      const avgDailySpend = daysElapsed > 0 ? weekSpent / daysElapsed : 0;
-      
-      // Calculate habit completion for the week
-      let weekHabitTotal = 0;
-      let weekHabitCompleted = 0;
-      
-      for (let i = 0; i <= dayOfWeek; i++) {
-        const date = new Date(startOfWeek);
-        date.setDate(startOfWeek.getDate() + i);
-        const dateKey = getDateKey(date);
-        
-        state.habits.forEach(habit => {
-          weekHabitTotal++;
-          if (habit.completions[dateKey]) {
-            weekHabitCompleted++;
-          }
-        });
-      }
-      
-      const weekHabitRate = weekHabitTotal > 0 ? Math.round((weekHabitCompleted / weekHabitTotal) * 100) : 0;
-      
-      // Find best day (most habits completed or least money spent)
-      const dailyScores = [];
-      for (let i = 0; i <= dayOfWeek; i++) {
-        const date = new Date(startOfWeek);
-        date.setDate(startOfWeek.getDate() + i);
-        const dateKey = getDateKey(date);
-        
-        const dayHabits = state.habits.filter(h => h.completions[dateKey]).length;
-        const daySpent = weekTransactions.filter(t => t.date === dateKey).reduce((sum, t) => sum + t.amount, 0);
-        
-        dailyScores.push({
-          day: date.toLocaleDateString('en-US', { weekday: 'short' }),
-          score: dayHabits - (daySpent / 10) // Simple scoring: habits good, spending bad
-        });
-      }
-      
-      const bestDay = dailyScores.length > 0 ? 
-        dailyScores.sort((a, b) => b.score - a.score)[0].day : '-';
-      
-      return {
-        startDate: startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        endDate: endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        weekSpent: weekSpent.toFixed(0),
-        avgDailySpend: avgDailySpend.toFixed(0),
-        weekHabitRate,
-        bestDay
-      };
-    }
-
-    // Rendering Functions
-    function renderDashboard() {
-      const budgetStats = calculateBudgetStats();
-      const habitStats = calculateHabitStats();
-      const weeklySummary = getWeeklySummary();
-      
-      // Update Weekly Summary
-      document.getElementById('weekly-summary-dates').textContent = 
-        `${weeklySummary.startDate} - ${weeklySummary.endDate}`;
-      document.getElementById('week-spent').textContent = weeklySummary.weekSpent;
-      document.getElementById('week-habits').textContent = weeklySummary.weekHabitRate;
-      document.getElementById('week-avg-spend').textContent = weeklySummary.avgDailySpend;
-      document.getElementById('week-best-day').textContent = weeklySummary.bestDay;
-      
-      // Update stats
-      document.getElementById('dashboard-spent').textContent = budgetStats.totalSpent.toFixed(0);
-      document.getElementById('dashboard-remaining').textContent = budgetStats.remaining.toFixed(0);
-      document.getElementById('dashboard-habits-completed').textContent = habitStats.totalCompletions;
-      document.getElementById('dashboard-streak').textContent = habitStats.streak;
-      
-      // Update progress bars
-      const budgetUsage = budgetStats.salary > 0 ? (budgetStats.totalSpent / budgetStats.salary * 100) : 0;
-      document.getElementById('dashboard-budget-pct').textContent = budgetUsage.toFixed(0) + '%';
-      document.getElementById('dashboard-budget-bar').style.width = Math.min(budgetUsage, 100) + '%';
-      
-      document.getElementById('dashboard-habit-pct').textContent = habitStats.completionRate.toFixed(0) + '%';
-      document.getElementById('dashboard-habit-bar').style.width = habitStats.completionRate + '%';
-      
-      // Update budget breakdown
-      document.getElementById('needs-spent').textContent = budgetStats.needsSpent.toFixed(0);
-      document.getElementById('needs-budget').textContent = budgetStats.needsBudget.toFixed(0);
-      document.getElementById('wants-spent').textContent = budgetStats.wantsSpent.toFixed(0);
-      document.getElementById('wants-budget').textContent = budgetStats.wantsBudget.toFixed(0);
-      document.getElementById('savings-actual').textContent = budgetStats.remaining.toFixed(0);
-      
-      const needsPct = budgetStats.needsBudget > 0 ? (budgetStats.needsSpent / budgetStats.needsBudget * 100) : 0;
-      const wantsPct = budgetStats.wantsBudget > 0 ? (budgetStats.wantsSpent / budgetStats.wantsBudget * 100) : 0;
-      
-      document.getElementById('needs-bar').style.width = Math.min(needsPct, 100) + '%';
-      document.getElementById('wants-bar').style.width = Math.min(wantsPct, 100) + '%';
-      
-      // Draw graphs
-      setTimeout(() => {
-        drawSpendingGraph();
-        drawHabitGraph();
-      }, 100);
-    }
-
-    function renderBudgetPage() {
-      const budgetStats = calculateBudgetStats();
-      
-      // Update budget display
-      document.getElementById('budget-salary').textContent = budgetStats.salary.toFixed(0);
-      document.getElementById('budget-total').textContent = budgetStats.afterBills.toFixed(0);
-      
-      document.getElementById('budget-needs-pct').textContent = state.budgetSettings.needsPct;
-      document.getElementById('budget-needs-amount').textContent = budgetStats.needsBudget.toFixed(0);
-      
-      document.getElementById('budget-wants-pct').textContent = state.budgetSettings.wantsPct;
-      document.getElementById('budget-wants-amount').textContent = budgetStats.wantsBudget.toFixed(0);
-      
-      // Render recurring bills
-      const billsListEl = document.getElementById('recurring-bills-list');
-      
-      if (state.recurringBills.length === 0) {
-        billsListEl.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📅</div>
-            <div class="empty-state-text">No recurring bills yet</div>
-          </div>
-        `;
-      } else {
-        const upcomingBills = getUpcomingBills();
-        billsListEl.innerHTML = upcomingBills.map(bill => {
-          const dueStatus = bill.daysUntil === 0 ? 'Due today!' : 
-                           bill.daysUntil === 1 ? 'Due tomorrow' :
-                           `Due in ${bill.daysUntil} days`;
-          
-          return `
-            <div class="list-item">
-              <div class="list-item-content">
-                <div class="list-item-title">${bill.name}</div>
-                <div class="list-item-subtitle">${bill.category} • ${dueStatus}</div>
-              </div>
-              <div class="list-item-action">
-                <span class="list-item-value amount-negative">$${bill.amount.toFixed(2)}</span>
-                <button class="modal-close" onclick="deleteRecurringBill(${bill.id})" style="background: var(--error);">×</button>
-              </div>
-            </div>
-          `;
-        }).join('');
-        
-        const totalBills = getTotalMonthlyBills();
-        billsListEl.innerHTML += `
-          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 600; color: var(--text-primary);">Total Monthly Bills</span>
-            <span style="font-size: 1.25rem; font-weight: 700; color: var(--error); font-family: 'Merriweather', serif;">$${totalBills.toFixed(2)}</span>
-          </div>
-        `;
-      }
-      
-      // Render transactions
-      const listEl = document.getElementById('transactions-list');
-      
-      if (state.transactions.length === 0) {
-        listEl.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">💸</div>
-            <div class="empty-state-text">No transactions yet</div>
-          </div>
-        `;
-        return;
-      }
-      
-      listEl.innerHTML = state.transactions.map(t => {
-        const catType = getCategoryType(t.category);
-        const badgeClass = catType === 'needs' ? 'badge-needs' : 'badge-wants';
-        
-        return `
-          <div class="list-item">
-            <div class="list-item-content">
-              <div class="list-item-title">
-                ${t.category}
-                <span class="category-badge ${badgeClass}">${catType}</span>
-              </div>
-              ${t.description ? `<div class="list-item-subtitle">${t.description}</div>` : ''}
-              <div class="list-item-subtitle">${t.date}</div>
-            </div>
-            <div class="list-item-action">
-              <span class="list-item-value ${t.type === 'income' ? 'amount-positive' : 'amount-negative'}">
-                ${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}
-              </span>
-              <button class="modal-close" onclick="deleteTransaction(${t.id})" style="background: var(--error);">×</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderHabitsPage() {
-      document.getElementById('habit-date').textContent = formatDate(state.habitDate);
-      
-      const listEl = document.getElementById('habits-list');
-      
-      if (state.habits.length === 0) {
-        listEl.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">✨</div>
-            <div class="empty-state-text">No habits yet. Add one to get started!</div>
-          </div>
-        `;
-        return;
-      }
-      
-      const dateKey = getDateKey(state.habitDate);
-      
-      // Group habits by time of day
-      const habitGroups = {
-        'Morning Routine': [],
-        'Afternoon/Work': [],
-        'Evening Routine': [],
-        'Anytime/Daily': []
-      };
-      
-      state.habits.forEach(habit => {
-        const timeOfDay = habit.timeOfDay || 'Anytime/Daily';
-        if (!habitGroups[timeOfDay]) {
-          habitGroups[timeOfDay] = [];
-        }
-        habitGroups[timeOfDay].push(habit);
-      });
-      
-      let html = '';
-      
-      Object.entries(habitGroups).forEach(([timeOfDay, habits]) => {
-        if (habits.length === 0) return;
-        
-        const completed = habits.filter(h => h.completions[dateKey]).length;
-        const total = habits.length;
-        const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-        
-        html += `
-          <div style="margin-bottom: 1.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-              <div class="habit-checklist-category">${timeOfDay}</div>
-              <div style="font-size: 0.75rem; font-weight: 600; color: var(--primary);">
-                ${completed}/${total} (${percentage}%)
-              </div>
-            </div>
-        `;
-        
-        habits.forEach(habit => {
-          const isChecked = habit.completions[dateKey];
-          
-          // Calculate streak for this habit
-          let streak = 0;
-          let checkDate = new Date(state.habitDate);
-          checkDate.setDate(checkDate.getDate() - 1);
-          
-          for (let i = 0; i < 365; i++) {
-            const key = getDateKey(checkDate);
-            if (habit.completions[key]) {
-              streak++;
-              checkDate.setDate(checkDate.getDate() - 1);
-            } else {
-              break;
-            }
-          }
-          
-          html += `
-            <div class="habit-item">
-              <div class="habit-checkbox ${isChecked ? 'checked' : ''}" 
-                   onclick="toggleHabit(${habit.id}, state.habitDate)">
-                ${isChecked ? '✓' : ''}
-              </div>
-              <div class="habit-info">
-                <div class="habit-name">${habit.name}</div>
-              </div>
-              <div style="text-align: right;">
-                ${streak > 0 ? `<div class="habit-streak">${streak}🔥</div>` : ''}
-                <button class="modal-close" onclick="deleteHabit(${habit.id})" 
-                        style="background: var(--error); margin-top: 0.25rem;">×</button>
-              </div>
-            </div>
-          `;
-        });
-        
-        html += `</div>`;
-      });
-      
-      listEl.innerHTML = html;
-    }
-
-    function renderSavingsPage() {
-      const thisMonthTransfers = getCurrentMonthSavingsTransfers();
-      const thisMonthTotal = thisMonthTransfers.reduce((sum, t) => sum + t.amount, 0);
-      const totalSaved = getTotalSavingsTransfers();
-      
-      document.getElementById('savings-this-month').textContent = thisMonthTotal.toFixed(0);
-      document.getElementById('savings-total').textContent = totalSaved.toFixed(0);
-      
-      // Auto calculator
-      const budgetStats = calculateBudgetStats();
-      document.getElementById('calc-income').textContent = budgetStats.salary.toFixed(0);
-      document.getElementById('calc-spent').textContent = budgetStats.totalSpent.toFixed(0);
-      document.getElementById('calc-bills').textContent = budgetStats.totalBills.toFixed(0);
-      document.getElementById('calc-transfers').textContent = budgetStats.monthlyTransfers.toFixed(0);
-      document.getElementById('calc-available').textContent = budgetStats.remaining.toFixed(0);
-      
-      // Render transfer history
-      const listEl = document.getElementById('savings-transfers-list');
-      
-      if (state.savingsTransfers.length === 0) {
-        listEl.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">💰</div>
-            <div class="empty-state-text">No savings transfers yet</div>
-          </div>
-        `;
-        return;
-      }
-      
-      listEl.innerHTML = state.savingsTransfers.map(t => {
-        return `
-          <div class="list-item">
-            <div class="list-item-content">
-              <div class="list-item-title">${t.destination}</div>
-              ${t.note ? `<div class="list-item-subtitle">${t.note}</div>` : ''}
-              <div class="list-item-subtitle">${t.date}</div>
-            </div>
-            <div class="list-item-action">
-              <span class="list-item-value amount-positive">$${t.amount.toFixed(2)}</span>
-              <button class="modal-close" onclick="deleteSavingsTransfer(${t.id})" style="background: var(--error);">×</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderProjectsPage() {
-      const activeProjects = state.projects.filter(p => !p.completed);
-      const completedProjects = state.projects.filter(p => p.completed);
-      
-      // Render active projects
-      const activeListEl = document.getElementById('active-projects-list');
-      
-      if (activeProjects.length === 0) {
-        activeListEl.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">💡</div>
-            <div class="empty-state-text">No active projects yet</div>
-          </div>
-        `;
-      } else {
-        activeListEl.innerHTML = activeProjects.map(p => {
-          const priorityColors = {
-            'High': 'var(--error)',
-            'Medium': 'var(--warning)',
-            'Low': 'var(--success)'
-          };
-          
-          return `
-            <div class="list-item">
-              <div class="list-item-content">
-                <div class="list-item-title">${p.title}</div>
-                <div class="list-item-subtitle">
-                  ${p.category} • 
-                  <span style="color: ${priorityColors[p.priority]}; font-weight: 600;">${p.priority} Priority</span>
-                </div>
-                ${p.description ? `<div class="list-item-subtitle" style="margin-top: 0.25rem;">${p.description}</div>` : ''}
-              </div>
-              <div class="list-item-action">
-                <button class="btn btn-small btn-secondary" onclick="toggleProjectComplete(${p.id})">✓</button>
-                <button class="modal-close" onclick="deleteProject(${p.id})" style="background: var(--error);">×</button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-      
-      // Render completed projects
-      const completedListEl = document.getElementById('completed-projects-list');
-      
-      if (completedProjects.length === 0) {
-        completedListEl.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">✨</div>
-            <div class="empty-state-text">No completed projects yet</div>
-          </div>
-        `;
-      } else {
-        completedListEl.innerHTML = completedProjects.map(p => {
-          return `
-            <div class="list-item" style="opacity: 0.7;">
-              <div class="list-item-content">
-                <div class="list-item-title" style="text-decoration: line-through;">${p.title}</div>
-                <div class="list-item-subtitle">${p.category}</div>
-              </div>
-              <div class="list-item-action">
-                <button class="btn btn-small btn-secondary" onclick="toggleProjectComplete(${p.id})">↶</button>
-                <button class="modal-close" onclick="deleteProject(${p.id})" style="background: var(--error);">×</button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-    }
-
-    // Graph Drawing Functions
-    function drawSpendingGraph() {
-      const canvas = document.getElementById('spending-graph');
-      if (!canvas) return;
-      
-      const ctx = canvas.getContext('2d');
-      const width = canvas.width = canvas.parentElement.offsetWidth - 32;
-      const height = canvas.height = 220;
-      
-      const padding = { top: 20, right: 20, bottom: 40, left: 50 };
-      const graphWidth = width - padding.left - padding.right;
-      const graphHeight = height - padding.top - padding.bottom;
-      
-      // Get data for current month
-      const currentMonth = state.currentDate.getMonth();
-      const currentYear = state.currentDate.getFullYear();
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      const dailyData = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(currentYear, currentMonth, day);
-        if (date > new Date()) break;
-        
-        const dateStr = getDateKey(date);
-        const dayTransactions = state.transactions.filter(t => t.date === dateStr && t.type === 'expense');
-        const total = dayTransactions.reduce((sum, t) => sum + t.amount, 0);
-        
-        dailyData.push({ day, amount: total });
-      }
-      
-      if (dailyData.length === 0) {
-        ctx.fillStyle = 'var(--text-tertiary)';
-        ctx.font = '14px Work Sans';
-        ctx.textAlign = 'center';
-        ctx.fillText('No spending data yet', width / 2, height / 2);
-        return;
-      }
-      
-      // Find max value
-      const maxAmount = Math.max(...dailyData.map(d => d.amount), 100);
-      const yScale = graphHeight / maxAmount;
-      const xScale = graphWidth / (dailyData.length - 1 || 1);
-      
-      // Clear canvas
-      ctx.clearRect(0, 0, width, height);
-      
-      // Draw grid lines
-      ctx.strokeStyle = '#E5E5E0';
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 4; i++) {
-        const y = padding.top + (graphHeight / 4) * i;
-        ctx.beginPath();
-        ctx.moveTo(padding.left, y);
-        ctx.lineTo(padding.left + graphWidth, y);
-        ctx.stroke();
-        
-        // Y-axis labels
-        const value = maxAmount * (1 - i / 4);
-        ctx.fillStyle = '#8F8F8F';
-        ctx.font = '11px Work Sans';
-        ctx.textAlign = 'right';
-        ctx.fillText('$' + value.toFixed(0), padding.left - 10, y + 4);
-      }
-      
-      // Draw line
-      ctx.strokeStyle = '#C47227';
-      ctx.lineWidth = 3;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      
-      dailyData.forEach((point, index) => {
-        const x = padding.left + (index * xScale);
-        const y = padding.top + graphHeight - (point.amount * yScale);
-        
-        if (index === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-      });
-      
-      ctx.stroke();
-      
-      // Draw dots
-      ctx.fillStyle = '#C47227';
-      dailyData.forEach((point, index) => {
-        const x = padding.left + (index * xScale);
-        const y = padding.top + graphHeight - (point.amount * yScale);
-        
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      
-      // X-axis labels
-      ctx.fillStyle = '#8F8F8F';
-      ctx.font = '11px Work Sans';
-      ctx.textAlign = 'center';
-      const labelInterval = Math.ceil(dailyData.length / 6);
-      dailyData.forEach((point, index) => {
-        if (index % labelInterval === 0) {
-          const x = padding.left + (index * xScale);
-          ctx.fillText(point.day, x, height - padding.bottom + 20);
-        }
-      });
-    }
-
-    function drawHabitGraph() {
-      const canvas = document.getElementById('habit-graph');
-      if (!canvas) return;
-      
-      const ctx = canvas.getContext('2d');
-      const width = canvas.width = canvas.parentElement.offsetWidth - 32;
-      const height = canvas.height = 220;
-      
-      const padding = { top: 20, right: 20, bottom: 40, left: 50 };
-      const graphWidth = width - padding.left - padding.right;
-      const graphHeight = height - padding.top - padding.bottom;
-      
-      // Get data for current month
-      const currentMonth = state.currentDate.getMonth();
-      const currentYear = state.currentDate.getFullYear();
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      const dailyData = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(currentYear, currentMonth, day);
-        if (date > new Date()) break;
-        
-        const dateKey = getDateKey(date);
-        let completed = 0;
-        let total = state.habits.length;
-        
-        state.habits.forEach(habit => {
-          if (habit.completions[dateKey]) completed++;
-        });
-        
-        const rate = total > 0 ? (completed / total) * 100 : 0;
-        dailyData.push({ day, rate, completed, total });
-      }
-      
-      if (dailyData.length === 0 || state.habits.length === 0) {
-        ctx.fillStyle = 'var(--text-tertiary)';
-        ctx.font = '14px Work Sans';
-        ctx.textAlign = 'center';
-        ctx.fillText('No habit data yet', width / 2, height / 2);
-        return;
-      }
-      
-      const yScale = graphHeight / 100;
-      const xScale = graphWidth / (dailyData.length - 1 || 1);
-      
-      // Clear canvas
-      ctx.clearRect(0, 0, width, height);
-      
-      // Draw grid lines
-      ctx.strokeStyle = '#E5E5E0';
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 4; i++) {
-        const y = padding.top + (graphHeight / 4) * i;
-        ctx.beginPath();
-        ctx.moveTo(padding.left, y);
-        ctx.lineTo(padding.left + graphWidth, y);
-        ctx.stroke();
-        
-        // Y-axis labels
-        const value = 100 - (i * 25);
-        ctx.fillStyle = '#8F8F8F';
-        ctx.font = '11px Work Sans';
-        ctx.textAlign = 'right';
-        ctx.fillText(value + '%', padding.left - 10, y + 4);
-      }
-      
-      // Draw line
-      ctx.strokeStyle = '#2D7A5C';
-      ctx.lineWidth = 3;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      
-      dailyData.forEach((point, index) => {
-        const x = padding.left + (index * xScale);
-        const y = padding.top + graphHeight - (point.rate * yScale);
-        
-        if (index === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-      });
-      
-      ctx.stroke();
-      
-      // Draw dots
-      ctx.fillStyle = '#2D7A5C';
-      dailyData.forEach((point, index) => {
-        const x = padding.left + (index * xScale);
-        const y = padding.top + graphHeight - (point.rate * yScale);
-        
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      
-      // X-axis labels
-      ctx.fillStyle = '#8F8F8F';
-      ctx.font = '11px Work Sans';
-      ctx.textAlign = 'center';
-      const labelInterval = Math.ceil(dailyData.length / 6);
-      dailyData.forEach((point, index) => {
-        if (index % labelInterval === 0) {
-          const x = padding.left + (index * xScale);
-          ctx.fillText(point.day, x, height - padding.bottom + 20);
-        }
-      });
-    }
-
-    // Initialize app
-    init();
-  </script>
 </body>
 </html>
